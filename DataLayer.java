@@ -66,15 +66,114 @@ public class DataLayer {
     /* keyword management */
 
     public int addKeywords(String userType, int userID, List<String> keywords) {
-        return 1;
+        int result = 0;
+        try{
+            // get keyword IDs from keyword table because table relations use IDs
+            String keywordIdSql = "SELECT keyword_id FROM keyword WHERE keyword = ?";
+            PreparedStatement keywordIdPstmt = conn.prepareStatement(keywordIdSql);
+            List<Integer> keywordIds = new ArrayList<>();
+            for(String kw : keywords){
+                keywordIdPstmt.setString(1, kw);
+                ResultSet rs = keywordIdPstmt.executeQuery();
+                if(rs.next()){
+                    keywordIds.add(rs.getInt("keyword_id"));
+                }
+                rs.close();
+            }
+            if(userType.equals("professor")){
+                sql = "INSERT INTO professor_keyword(account_id, keyword_id) VALUES(?,?) ON DUPLICATE KEY UPDATE account_id = account_id";
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                for(int kwId : keywordIds){
+                    pstmt.setInt(1, userID);
+                    pstmt.setInt(2, kwId);
+                    result += pstmt.executeUpdate();
+                }
+            }
+            else if(userType.equals("student")){
+                sql = "INSERT INTO student_keyword(account_id, keyword_id) VALUES(?,?) ON DUPLICATE KEY UPDATE account_id = account_id";
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                for(int kwId : keywordIds){
+                    pstmt.setInt(1, userID);
+                    pstmt.setInt(2, kwId);
+                    result += pstmt.executeUpdate();
+                }
+            }
+            else if(userType.equals("public")){
+                sql = "INSERT INTO public_keyword(account_id, keyword_id) VALUES(?,?) ON DUPLICATE KEY UPDATE account_id = account_id";
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                for(int kwId: keywordIds){
+                    pstmt.setInt(1, userID);
+                    pstmt.setInt(2, kwId);
+                    result += pstmt.executeUpdate();
+                }
+            }
+            else{
+                System.out.println("Invalid user type");
+                return -1;
+            }
+        }
+        catch(Exception e){
+            System.out.println("Error adding keywords: " + e.getMessage());
+        }
+        return result;
     }
     
+    // fix this method its not correct
     public int updateKeywords(String userType, int userID, List<String> keywords) {
         return 1;
     }
 
     public int deleteKeywords(String userType, int userID, List<String> keywords) {
-        return 1;
+        int result = 0; 
+        try{
+            // get keyword IDs from keyword table because table relations use IDs
+            String keywordIdSql = "SELECT keyword_id FROM keyword WHERE keyword = ?";
+            PreparedStatement keywordIdPstmt = conn.prepareStatement(keywordIdSql);
+            List<Integer> keywordIds = new ArrayList<>();
+            for(String kw : keywords){
+                keywordIdPstmt.setString(1, kw);
+                ResultSet rs = keywordIdPstmt.executeQuery();
+                if(rs.next()){
+                    keywordIds.add(rs.getInt("keyword_id"));
+                }
+                rs.close();
+            }
+            if(userType.equals("professor")){
+                sql = "DELETE FROM professor_keyword WHERE account_id = ? AND keyword_id = ?";
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                for(int kwId : keywordIds){
+                    pstmt.setInt(1, userID);
+                    pstmt.setInt(2, kwId);
+                    result += pstmt.executeUpdate();
+                }
+            }
+            else if(userType.equals("student")){
+                sql = "DELETE FROM student_keyword WHERE account_id = ? AND keyword_id = ?";
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                for(int kwId : keywordIds){
+                    pstmt.setInt(1, userID);
+                    pstmt.setInt(2, kwId);
+                    result += pstmt.executeUpdate();
+                }
+            }
+            else if(userType.equals("public")){
+                sql = "DELETE FROM public_keyword WHERE account_id = ? AND keyword_id = ?";
+                PreparedStatement pstmt = conn.prepareStatement(sql);
+                for(int kwId : keywordIds){
+                    pstmt.setInt(1, userID);
+                    pstmt.setInt(2, kwId);
+                    result += pstmt.executeUpdate();
+                }
+            }
+            else{
+                System.out.println("Invalid user type");
+                return -1;
+            }
+        }
+        catch(Exception e){
+            System.out.println("Error deleting keywords: " + e.getMessage());
+        }
+        return result;
     }
 
     /* abstract management */
