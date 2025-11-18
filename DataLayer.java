@@ -24,12 +24,13 @@ public class DataLayer {
             System.out.println("DB Connected");
         }
         catch(ClassNotFoundException cnfe){
-            System.out.println("No DB connection " + cnfe.getMessage());
+
+            System.out.println("No DB connection: not found " + cnfe.getMessage());
 
             System.exit(0);
         }
         catch(SQLException sqle){
-            System.out.println("No DB connection " + sqle.getMessage());
+            System.out.println("No DB connection: sql " + sqle.getMessage());
             System.exit(0);
         }//end of catch
         return (conn!=null);
@@ -134,9 +135,6 @@ public class DataLayer {
 
     }
 
-
-
-
     public User getUserByUsername(String username) throws SQLException {
         String sql = "SELECT account_id, user_type FROM account WHERE username = ?";
         
@@ -231,6 +229,14 @@ public class DataLayer {
     }
 
     /* keyword management */
+
+    public List<String> getProfessorKeywords(int accountID) {
+        return null;
+    }
+
+    public List<String> getStudentKeywords(int accountID) {
+        return null;
+    }
 
     public int addKeywords(String userType, int userID, List<String> keywords) {
         int result = 0;
@@ -345,15 +351,14 @@ public class DataLayer {
 
     /* abstract management */
 
-    public int addAbstract(String title, String text, List<Integer> professorIDs) {
-        return 1;
+    public List<String> getAbstract(int profAccountID) {
+        // return list of abstract titles
+        List<String> abstracts = new ArrayList<>();
+        return abstracts;
     }
 
-    public int updateAbstract(int abstractID, String title, String text, List<Integer> professorIDs) {
-        return 1;
-    }
-
-    public int deleteAbstract(int abstractID) {
+    public int addAbstract(String title, List<String> professorsUsernames) {
+        // get the ids from 
         return 1;
     }
 
