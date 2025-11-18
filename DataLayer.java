@@ -360,6 +360,7 @@ public class DataLayer {
     public int addAbstract(String title, List<String> professorsUsernames) {
         // get the ids from 
         return 1;
+    }
     public int addAbstract(String title, String text, List<Integer> professorIDs) {
         int result = 0;
         try{
