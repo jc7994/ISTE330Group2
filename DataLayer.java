@@ -39,24 +39,191 @@ public class DataLayer {
 
     /* user account management */
 
-    public int registerUser(String username, String password, String userType, String userInfo) {
-        int result = 0;
+    public boolean registerStudent(String username, String password, String firstName, String lastName, String email, Double gpa) throws SQLException {
+        try {
+            String insertAccount = "INSERT INTO account(username, password, user_type) VALUES (?, ?, 'student')";
+            PreparedStatement accountStmt = conn.prepareStatement(insertAccount, Statement.RETURN_GENERATED_KEYS);
+            accountStmt.setString(1, username);
+            accountStmt.setString(2, password);
+
+            int rowsAffected = accountStmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                ResultSet generatedKeys = accountStmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    int accountID = generatedKeys.getInt(1);
+
+                    String insertStudentSQL = "INSERT INTO student (account_id, first_name, last_name, email, gpa) VALUES (?, ?, ?, ?, ?)";
+                    PreparedStatement studentStmt = conn.prepareStatement(insertStudentSQL);
+                    studentStmt.setInt(1, accountID);
+                    studentStmt.setString(2, firstName);
+                    studentStmt.setString(3, lastName);
+                    studentStmt.setString(4, email);
+                    studentStmt.setDouble(5, gpa);
+
+                    studentStmt.executeUpdate();
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error registering: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean registerProfessor(String username, String password, String firstName, String lastName, String email, String building, String office) throws SQLException {
+        try {
+            String insertAccount = "INSERT INTO account(username, password, user_type) VALUES (?, ?, 'student')";
+            PreparedStatement accountStmt = conn.prepareStatement(insertAccount, Statement.RETURN_GENERATED_KEYS);
+            accountStmt.setString(1, username);
+            accountStmt.setString(2, password);
+
+            int rowsAffected = accountStmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                ResultSet generatedKeys = accountStmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    int accountID = generatedKeys.getInt(1);
+
+                    String insertProfessor = "INSERT INTO professor (account_id, first_name, last_name, email, building_number, office_number) VALUES (?, ?, ?, ?, ?, ?)";
+                    PreparedStatement profStmt = conn.prepareStatement(insertProfessor);
+                    profStmt.setInt(1, accountID);
+                    profStmt.setString(2, firstName);
+                    profStmt.setString(3, lastName);
+                    profStmt.setString(4, email);
+                    profStmt.setString(5, building);
+                    profStmt.setString(6, building);
+
+                    profStmt.executeUpdate();
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error registering: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean registerPublic(String username, String password, String firstName, String lastName, String email) throws SQLException {
+        try {
+            String insertAccount = "INSERT INTO account(username, password, user_type) VALUES (?, ?, 'student')";
+            PreparedStatement accountStmt = conn.prepareStatement(insertAccount, Statement.RETURN_GENERATED_KEYS);
+            accountStmt.setString(1, username);
+            accountStmt.setString(2, password);
+
+            int rowsAffected = accountStmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                ResultSet generatedKeys = accountStmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    int accountID = generatedKeys.getInt(1);
+                    String insertPublic = "INSERT INTO public (account_id, first_name, last_name, email) VALUES (?, ?, ?, ?)";
+                    PreparedStatement publicStmt = conn.prepareStatement(insertPublic);
+                    publicStmt.setInt(1, accountID);
+                    publicStmt.setString(2, firstName);
+                    publicStmt.setString(3, lastName);
+                    publicStmt.setString(4, email);
+                    publicStmt.executeUpdate();
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error registering public user: " + e.getMessage());
+        }
+        return false;
+
+    }
+
+
+
+
+    public User getUserByUsername(String username) throws SQLException {
+        String sql = "SELECT account_id, user_type FROM account WHERE username = ?";
         
-        return 1;
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int accountID = rs.getInt("account_id");
+                    String userType = rs.getString("user_type");
+                    return getUserByType(accountID, username, userType);
+                }
+                
+            }
+        }
+        return null;
     }
 
-    public int loginUser(String username, String password) {
-        return 1;
+    public boolean validateLogin(String username, String password) throws SQLException {
+        String sql = "SELECT password FROM account WHERE username = ?";
+    
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String storedPassword = rs.getString("password");
+                    return password.equals(storedPassword);
+                }
+            }
+        }
+        return false;
     }
 
-    // unsure how to 
-    public int updateAccount(int accountID, String updatedInfo) {
-        return 1;
+    private User getUserByType(int accountID, String username, String userType) throws SQLException {
+        String sql;
+
+        switch (userType) {
+            case "student":
+                sql = "SELECT first_name, last_name, email, gpa FROM student WHERE account_id = ?";
+                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    stmt.setInt(1, accountID);
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        if (rs.next()) {
+                            User student = new User();
+                            student.setAccountID(accountID);
+                            student.setUsername(username);
+                            student.setUserType(userType);
+                            return student;
+                        }
+                    }
+                }
+                break;
+            case "professor":
+                sql  = "SELECT first_name, last_name, building_number, office_number, email FROM professor WHERE account_id = ?";
+                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    stmt.setInt(1, accountID);
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        if (rs.next()) {
+                            User professor = new User();
+                            professor.setAccountID(accountID);
+                            professor.setUsername(username);
+                            professor.setUserType(userType);
+                            return professor;
+                        }
+                    }
+                }
+                break;
+            case "public":
+                sql = "SELECT first_name, last_name, email FROM public WHERE account_id = ?";
+                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    stmt.setInt(1, accountID);
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        if (rs.next()) {
+                            User publicUser = new User();
+                            publicUser.setAccountID(accountID);
+                            publicUser.setUsername(username);
+                            publicUser.setUserType(userType);
+                            return publicUser;
+                        }
+                    }
+                }
+                break;
+        }
+        return null;
     }
 
-    public int deleteAccount(int accountID) {
-        return 1;
-    }
 
     public String hashPassword(String rawPassword) {
         // use BCrypt to hash maybe
