@@ -9,7 +9,6 @@ public class PresentationLayer {
     String password;
 
     public PresentationLayer() {
-        
 
         runConnectDatabase();
         System.out.print("Welcome to the Faculty Research Database! \n");
@@ -21,7 +20,7 @@ public class PresentationLayer {
         System.out.println("Welcome, " + currentUser.getUsername() + "!");
 
         switch (currentUser.getUserType()) {
-            case "professor":
+            case "professor": 
                 professorMenu(currentUser);
                 break;
             case "student":
@@ -31,6 +30,21 @@ public class PresentationLayer {
         }
 
         currentUser = loginMenu();
+
+    }
+
+    public void interestSearchMenu() {
+        System.out.println("\"---------------SEARCH BY INTERESTS--------------\"");
+        System.out.print("Please enter an interest to search from: ")
+        String input = GetInput.readLine();
+
+
+    }
+
+    public void abstractSearchMenu() {
+        System.out.println("\"---------------SEARCH BY ABSTRACTS--------------\"");
+        System.out.print("Please enter a title to search from: ")
+        String input = GetInput.readLine();
 
 
     }
@@ -174,8 +188,8 @@ public class PresentationLayer {
                                 "[0] Logout \n" +
                                 "[1] Interests \n" +
                                 "[2] Abstracts \n" +
-                                "[3] Search by Interests and Abstracts \n" +
-                                "[4] See all Faculty Abstracts");
+                                "[3] Search by Interests \n" +
+                                "[4] Search by Abstracts");
             System.out.print("Selection: ");
             int input = GetInput.readInt();
             System.out.println();
@@ -265,13 +279,12 @@ public class PresentationLayer {
                     System.out.println("Back to Professor Menu...");
                     break;
                 case 3:
-                    System.out.println("\"---------------SEARCH BY INTERESTS AND ABSTRACTS--------------\"");
-                    // insert search function here
+                    System.out.println("\"---------------SEARCH BY INTERESTS--------------\"");
+                    abstractSearchMenu();
                     break;
 
                 case 4:
-                    System.out.println("\"---------------ALL ABSTRACTS--------------\"");
-                    // insert getAbstracts function here
+                    interestSearchMenu();
                     break;
 
             }
@@ -279,8 +292,6 @@ public class PresentationLayer {
 
 
     }
-
-
 
     public void studentMenu(User student) {
         System.out.println("---------------STUDENT MENU--------------");
@@ -410,8 +421,6 @@ public class PresentationLayer {
         }
     }
     
-
-
     public static void main(String[] args) {
         System.out.println("Group 2");
         new PresentationLayer();
