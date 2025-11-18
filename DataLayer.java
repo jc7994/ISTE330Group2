@@ -291,7 +291,7 @@ public class DataLayer {
         return result;
     }
     
-    // fix this method its not correct
+    // ig we aint using this lol
     public int updateKeywords(String userType, int userID, List<String> keywords) {
         return 1;
     }
@@ -360,6 +360,92 @@ public class DataLayer {
     public int addAbstract(String title, List<String> professorsUsernames) {
         // get the ids from 
         return 1;
+    public int addAbstract(String title, String text, List<Integer> professorIDs) {
+        int result = 0;
+        try{
+            sql = "INSERT INTO abstract(title, abstract_text) VALUES(?,?)";
+            PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, title);
+            pstmt.setString(2, text);
+            result = pstmt.executeUpdate();
+
+            // get the generated abstract ID 
+            ResultSet rs = pstmt.getGeneratedKeys();
+            int abstractID = -1;
+            if(rs.next()){
+                abstractID = rs.getInt(1);
+            }
+            rs.close();
+
+            sql = "INSERT INTO professor_abstract(professor_id, abstract_id) VALUES(?,?)";
+            pstmt = conn.prepareStatement(sql);
+            for(int profID : professorIDs){
+                pstmt.setInt(1, profID);
+                pstmt.setInt(2, abstractID);
+                result += pstmt.executeUpdate();
+            }
+
+        }
+        catch(SQLException e){
+            System.out.println("Error adding abstract: " + e.getMessage());
+        }
+        return result;
+    }
+
+    public int updateAbstract(int abstractID, String title, String text, List<Integer> professorIDs) {
+        int result = 0;
+        try{
+            conn.setAutoCommit(false); 
+            sql = "UPDATE abstract SET title = ? , abstract_text = ? WHERE abstract_id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, title);
+            pstmt.setString(2, text);
+            pstmt.setInt(3, abstractID);
+            result = pstmt.executeUpdate();
+            pstmt.close();
+
+            sql = "DELETE FROM professor_abstract WHERE abstract_id = ?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, abstractID);
+            pstmt.executeUpdate();
+            pstmt.close();
+
+            if (professorIDs != null && !professorIDs.isEmpty()) {
+            sql = "INSERT INTO professor_abstract(account_id, abstract_id) VALUES(?, ?)";
+            pstmt = conn.prepareStatement(sql);
+            for (int profID : professorIDs) {
+                pstmt.setInt(1, profID);
+                pstmt.setInt(2, abstractID);
+                pstmt.addBatch();
+            }
+            int[] batchResults = pstmt.executeBatch();
+            for (int r : batchResults) result += r;
+            pstmt.close();
+            }
+
+            conn.commit(); 
+            conn.setAutoCommit(true);
+        }
+        catch(SQLException e){
+            // potential error catch for commit rollback
+            System.out.println("Error updating abstract: " + e.getMessage());
+        }
+        return result;
+    }
+
+    public int deleteAbstract(int abstractID) {
+        int result = 0;
+        try{
+            sql = "DELETE FROM abstract WHERE abstract_id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1,abstractID);
+            result = pstmt.executeUpdate();
+            pstmt.close();
+        }
+        catch(SQLException e){
+            System.out.println("Error deleting abstract: " + e.getMessage());
+        }
+        return result;
     }
 
     /* search functionality 
