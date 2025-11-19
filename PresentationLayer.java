@@ -374,8 +374,11 @@ public class PresentationLayer {
         while (running) {
             System.out.println("Please select an option: \n" +
                                 "[0] Logout \n" +
-                                "[3] Search by Interests and Abstracts \n" +
-                                "[4] See all Faculty Abstracts");
+                                "[1] Search by Interests and Abstracts \n" +
+                                "[2] Insert Interests \n" +
+                                "[3] Modify Interests \n" +
+                                "[4] Search by Interests and Abstracts \n" +
+                                "[5] See all Faculty Abstracts");
             System.out.print("Selection: ");
             int input = GetInput.readInt();
             System.out.println();
@@ -388,9 +391,43 @@ public class PresentationLayer {
                     System.out.println("\"---------------SEARCH BY INTERESTS AND ABSTRACTS--------------\"");
                     // insert search function here
                     break;
-                case 2:
+
+                case 2: 
+                    System.out.println("\"---------------INSERT INTERESTS--------------\"");
+                    // insert insert interests function here   
+                    List<String> addInterests = Arrays.asList(GetInput.readLine().split(", "));
+                        if (dl.addKeywords("student", student.getAccountID(), addInterests) == 1) {
+                            System.out.println("Interests added.");
+                        }
+                    System.out.print("Enter ");
+
+                case 3:
+                    System.out.println("\"---------------MODIFY INTERESTS--------------\"");
+                    // insert modify interests function here   
+                    System.out.print("Enter ");
+                case 4:
+                    System.out.println("\"---------------SEARCH BY INTERESTS AND ABSTRACTS--------------\"");
+                    // insert search by interests and abstracts function here   
+                    System.out.print("Please enter an interest to search from: ");
+                    String guestInterest = GetInput.readLine();
+
+                    System.out.print("Please enter a title to search from: ");
+                    String guestAbstract = GetInput.readLine();
+
+                    
+
+
+                    System.out.print("Enter ");
+
+                case 5:
                     System.out.println("\"---------------ALL ABSTRACTS--------------\"");
-                    // insert getAbstracts function here
+                    // insert getAbstracts function here   
+                    System.out.print("Enter Professor ID: ");
+
+                    List<String> abstracts = dl.getAbstract(profAccountID);
+                    for (String i: abstracts){
+                        System.out.println(i);
+                    }
 
                     break;
                 default: 
