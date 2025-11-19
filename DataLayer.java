@@ -250,13 +250,53 @@ public class DataLayer {
 
     /* keyword management */
 
+    /**
+     * @param accountID         The account id of the profressor.
+     * @return                  List of profressor keywords.
+    */
     public List<String> getProfessorKeywords(int accountID) {
-        return null;
-    }
+        List<String> result = new ArrayList<>();
+        String sql = "SELECT k.keyword from professor_keyword pk JOIN keyword k ON pk.keyword_id = k.keyword_id WHERE pk.account_id = ? ORDER BY k.keyword ASC";
+        // Not sure if the ORDER BY is necessary but its still good QoL
 
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, accountID);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    result.add(rs.getString("keyword"));
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getting professor keywords: " + e.getMessage());
+        }
+
+        return result;
+    } // end of getProfessorKeywords.
+
+    /**
+     * @param accountID         The account id of the student.
+     * @return                  List of student keywords.
+    */
     public List<String> getStudentKeywords(int accountID) {
-        return null;
-    }
+        List<String> result = new ArrayList<>();
+        String sql = "SELECT k.keyword from student_keyword sk JOIN keyword k ON sk.keyword_id = k.keyword_id WHERE sk.account_id = ? ORDER BY k.keyword ASC";
+        // Not sure if the ORDER BY is necessary but its still good QoL
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, accountID);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    result.add(rs.getString("keyword"));
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getting student keywords: " + e.getMessage());
+        }
+
+        return result;
+    } // end of getStudentKeywords.
 
     public int addKeywords(String userType, int userID, List<String> keywords) {
         int result = 0;
