@@ -1,6 +1,10 @@
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Base64;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 public class DataLayer {
     private Connection conn;
@@ -222,10 +226,26 @@ public class DataLayer {
         return null;
     }
 
+    // hashing using the salt method 
+    public static String generateSalt(String username) {
+        StringBuilder salt = new StringBuilder();
+        for (int i = 0; i < username.length(); i+=2){
+            salt.append(username.charAt(i));
+        }
+        return salt.toString();
+    }
 
-    public String hashPassword(String rawPassword) {
+    public String hashPassword(String rawPassword, String salt) {
         // use BCrypt to hash maybe
-        return "";
+        try{
+            PBEKeySpec spec = new PBEKeySpec(rawPassword.toCharArray(), salt.getBytes(), 65536, 128);
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            byte[] hash = factory.generateSecret(spec).getEncoded();
+            return Base64.getEncoder().encodeToString(hash);
+        }
+        catch(Exception e ){
+            throw new RuntimeException("Error hashing password", e);
+        }
     }
 
     /* keyword management */
