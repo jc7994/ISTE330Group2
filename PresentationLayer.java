@@ -35,7 +35,7 @@ public class PresentationLayer {
 
     public void interestSearchMenu() {
         System.out.println("\"---------------SEARCH BY INTERESTS--------------\"");
-        System.out.print("Please enter an interest to search from: ")
+        System.out.print("Please enter an interest to search from: ");
         String input = GetInput.readLine();
 
 
@@ -43,7 +43,7 @@ public class PresentationLayer {
 
     public void abstractSearchMenu() {
         System.out.println("\"---------------SEARCH BY ABSTRACTS--------------\"");
-        System.out.print("Please enter a title to search from: ")
+        System.out.print("Please enter a title to search from: ");
         String input = GetInput.readLine();
 
 
