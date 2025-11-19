@@ -481,8 +481,8 @@ public class DataLayer {
         try{
             sql = "SELECT email FROM professor WHERE account_id = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            ps.setInt(1,professorID);
-            rs = ps.executeQuery();
+            pstmt.setInt(1,professorID);
+            rs = pstmt.executeQuery();
 
             if (rs.next()){
                 profEmail = rs.getString("email");
@@ -504,8 +504,8 @@ public class DataLayer {
         try{
             sql = "SELECT email FROM student WHERE account_id = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            ps.setInt(1,studentID);
-            rs = ps.executeQuery();
+            pstmt.setInt(1,studentID);
+            rs = pstmt.executeQuery();
 
             if (rs.next()){
                 studentEmail = rs.getString("email");

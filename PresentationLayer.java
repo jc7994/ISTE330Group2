@@ -423,7 +423,7 @@ public class PresentationLayer {
                     System.out.println("\"---------------ALL ABSTRACTS--------------\"");
                     // insert getAbstracts function here   
                     System.out.print("Enter Professor ID: ");
-
+                    int profAccountID = GetInput.readInt();
                     List<String> abstracts = dl.getAbstract(profAccountID);
                     for (String i: abstracts){
                         System.out.println(i);
