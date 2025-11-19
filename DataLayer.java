@@ -476,11 +476,49 @@ public class DataLayer {
     }
 
     public String getProfessorContactInfo(int professorID) {
-        return "";
+        String result = "";
+        String profEmail = "";
+        try{
+            sql = "SELECT email FROM professor WHERE account_id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ps.setInt(1,professorID);
+            rs = ps.executeQuery();
+
+            if (rs.next()){
+                profEmail = rs.getString("email");
+            }
+            pstmt.close();
+            rs.close();
+        }
+        catch(SQLException e){
+            System.out.println("Error getting contact info: " + e.getMessage());
+        }
+        result = "Professor ID " + professorID + " Contact Info: \nEmail: " + profEmail;
+
+        return result;
     }
 
     public String getStudentContactInfo(int studentID) {
-        return "";
+        String result = "";
+        String studentEmail = "";
+        try{
+            sql = "SELECT email FROM student WHERE account_id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            ps.setInt(1,studentID);
+            rs = ps.executeQuery();
+
+            if (rs.next()){
+                studentEmail = rs.getString("email");
+            }
+            pstmt.close();
+            rs.close();
+        }
+        catch(SQLException e){
+            System.out.println("Error getting contact info: " + e.getMessage());
+        }
+        result = "Student ID " + studentID + " Contact Info: \nEmail: " + studentEmail;
+
+        return result;
     }
 
 }
