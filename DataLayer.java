@@ -414,6 +414,22 @@ public class DataLayer {
     public List<String> getAbstract(int profAccountID) {
         // return list of abstract titles
         List<String> abstracts = new ArrayList<>();
+        sql="SELECT abstract.title FROM professor"; 
+        sql+="JOIN professor_abstract ON professor.account_id = professor_abstract.account_id";
+        sql+="JOIN abstract ON professor_abstract.abstact_id = abstract.abstract_id";
+        sql+="WHERE professor.account_id = ? ORDER BY abstract.title ASC";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, profAccountID);
+            
+            ResultSet rs = stmt.executeQuery(); 
+            while (rs.next()) {
+                abstracts.add(rs.getString("Abstract Title"));
+            }
+            
+        }
+        catch(Exception e){
+            System.out.println("Error getting abstracts: "+e);
+        }
         return abstracts;
     }
 
