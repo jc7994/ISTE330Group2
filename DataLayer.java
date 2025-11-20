@@ -173,6 +173,23 @@ public class DataLayer {
         return false;
     }
 
+    public int getAccountIDByUsername(String username) {
+        String sql = "SELECT account_id FROM account WHERE username = ?";
+        int accountID = -1;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+            
+            if (rs.next()) {
+                accountID = rs.getInt("account_id");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error retrieving account ID " + e.getMessage());
+        }
+        return accountID;
+    }
+
     private User getUserByType(int accountID, String username, String userType) throws SQLException {
         String sql;
 
@@ -304,12 +321,28 @@ public class DataLayer {
             // get keyword IDs from keyword table because table relations use IDs
             String keywordIdSql = "SELECT keyword_id FROM keyword WHERE keyword = ?";
             PreparedStatement keywordIdPstmt = conn.prepareStatement(keywordIdSql);
+
+            String insertKeywordSql = "INSERT INTO keyword (keyword) VALUES (?)";
+            PreparedStatement insertKeywordPstmt = conn.prepareStatement(insertKeywordSql, Statement.RETURN_GENERATED_KEYS);
+
             List<Integer> keywordIds = new ArrayList<>();
             for(String kw : keywords){
                 keywordIdPstmt.setString(1, kw);
                 ResultSet rs = keywordIdPstmt.executeQuery();
+                int keywordId;
                 if(rs.next()){
                     keywordIds.add(rs.getInt("keyword_id"));
+                }
+                else {
+                    insertKeywordPstmt.setString(1, kw);
+                    insertKeywordPstmt.executeUpdate();
+                    ResultSet keyRs = insertKeywordPstmt.getGeneratedKeys();
+                    if (keyRs.next()) {
+                        keywordId = keyRs.getInt(1);
+                        keywordIds.add(keywordId);
+                        
+                    }
+                    keyRs.close();
                 }
                 rs.close();
             }

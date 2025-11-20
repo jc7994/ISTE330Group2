@@ -1,4 +1,5 @@
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,8 +26,10 @@ public class PresentationLayer {
                 break;
             case "student":
                 studentMenu(currentUser);
+                break;
             case "public":
-                publicMenu();
+                publicMenu(currentUser);
+                break;
         }
 
         currentUser = loginMenu();
@@ -38,15 +41,12 @@ public class PresentationLayer {
         System.out.print("Please enter an interest to search from: ");
         String input = GetInput.readLine();
 
-
     }
 
     public void abstractSearchMenu() {
         System.out.println("\"---------------SEARCH BY ABSTRACTS--------------\"");
         System.out.print("Please enter a title to search from: ");
         String input = GetInput.readLine();
-
-
     }
 
     public User loginMenu() {
@@ -71,6 +71,8 @@ public class PresentationLayer {
                     String loginUsername = GetInput.readWord();
                     System.out.print("password: ");
                     String loginPassword = GetInput.readWord();
+                    loginPassword = dl.hashPassword(loginPassword, DataLayer.generateSalt(loginUsername));
+
                     try {
                         valid = dl.validateLogin(loginUsername, loginPassword);
                         if (valid) {
@@ -105,6 +107,7 @@ public class PresentationLayer {
 
                     System.out.print("Password: ");
                     String registerPassword = GetInput.readWord();
+                    registerPassword = dl.hashPassword(registerPassword, DataLayer.generateSalt(registerUsername));
                     System.out.println();
 
                     switch(userType) {
@@ -189,7 +192,8 @@ public class PresentationLayer {
                                 "[1] Interests \n" +
                                 "[2] Abstracts \n" +
                                 "[3] Search by Interests \n" +
-                                "[4] Search by Abstracts");
+                                "[4] View All Student Matches \n" +
+                                "[5] View All Abstracts");
             System.out.print("Selection: ");
             int input = GetInput.readInt();
             System.out.println();
@@ -204,29 +208,35 @@ public class PresentationLayer {
                     for (String interest : updateInterests) {
                         System.out.println(interest);
                     }
-                    boolean validUpdate = false;
-                    while (!validUpdate) {
+                    boolean updatingInterests = true;
+                    while (updatingInterests) {
                         System.out.println("Please select an option: \n" +
                                 "[0] Exit \n" +
                                 "[1] Add Interests \n" +
                                 "[2] Delete Interests");
-                        System.out.println();
                         System.out.print("Selection: ");
                         int updateInput = GetInput.readInt();
                         System.out.println();
 
-                        if (updateInput == 1) {
+                        if (updateInput == 0) {
+                            updatingInterests = false;
+                        }
+                        else if (updateInput == 1) {
+                            System.out.print("Interests to be added (separate by commas): ");
                             List<String> addInterests = Arrays.asList(GetInput.readLine().split(", "));
-                            if (dl.addKeywords("professor", professor.getAccountID(), addInterests) == 1) {
-                                System.out.println("Interests added.");
-                            }
+                            System.out.println();
+                            if (dl.addKeywords("professor", professor.getAccountID(), addInterests) != -1) {
+                                    System.out.println("Interests added.");
+                                }
                             else {
                                 System.out.println("Error adding interests.");
                             }
                         }
-                        if (updateInput == 2) {
+                        else if (updateInput == 2) {
+                            System.out.print("Interests to be deleted (separate by commas): ");
                             List<String> deleteInterests = Arrays.asList(GetInput.readLine().split(", "));
-                            if (dl.deleteKeywords("professor", professor.getAccountID(), deleteInterests) == 1) {
+                            System.out.println();
+                            if (dl.deleteKeywords("professor", professor.getAccountID(), deleteInterests) != -1) {
                                 System.out.println("Interests deleted.");
                             }
                             else {
@@ -242,54 +252,79 @@ public class PresentationLayer {
                 case 2:
                     System.out.println("---------------YOUR ABSTRACTS--------------");
                     List<String> abstracts = dl.getAbstract(professor.getAccountID());
-                    for (String abstractTitle : abstracts) {
-                        System.out.println(abstractTitle);
+                    for (String abs : abstracts) {
+                        System.out.println(abs);
                     }
-
-                    System.out.println("Please select an option: \n" +
+                    boolean updatingAbstracts = true;
+                    while (updatingAbstracts) {
+                        System.out.println("Please select an option: \n" +
                                 "[0] Exit \n" +
                                 "[1] Add Abstract \n");
-                    System.out.println();
                     System.out.print("Selection: ");
                     int updateInput = GetInput.readInt();
                     System.out.println();
 
-                    if (updateInput == 1) {
-                        int addedAbstract = -1;
-                        while (addedAbstract == -1) {
+                    if (updateInput == 0) {
+                        updatingAbstracts = false;
+                    }
+                    else if (updateInput == 1) {
+                        
                             System.out.println("Title: ");
                             String title = GetInput.readLine();
 
-                            System.out.println("Professor usernames: ");
+                            System.out.print("Professor usernames: ");
                             List<String> professors = Arrays.asList(GetInput.readLine().split(", "));
-                            addedAbstract = dl.addAbstract(title, professors);
-                            if (addedAbstract != 1) {
+                            System.out.println();
+                            // convert the list of usernames to a list of account IDs
+                            List<Integer> professorIDs = new ArrayList<>();
+                            for (String username : professors) {
+                                int accountID = dl.getAccountIDByUsername(username);
+                                professorIDs.add(accountID);
+                            }
+
+                            System.out.print("Insert abstract text (up to 800 characters): ");
+                            String text = GetInput.readLine();
+
+                            int added = dl.addAbstract(title, text, professorIDs);
+                            if (added == 1) {
                                 System.out.println("Added abstract.");
                             }
                             else {
                                 System.out.println("Error adding abstract.");
                             }
-                            System.out.println("Back to Professor Menu...");
-
-                            }
+                        
                     }
-                    else { 
+                    else if (updateInput == 2) { 
+                        System.out.println("Enter abstract title to delete: ");
+                        String removeTitle = GetInput.readLine();
+                        int removed = 0; // TODO: = dl.deleteAbstract(removeTitle);
+                        if (removed == 1) {
+                            System.out.println("Abstract deleted.");
+                        }
+                        else {
+                            System.out.println("Error deleting abstract.");
+                        }
+                    }
+                    else {
                         System.out.println("Invalid input");
                     }
                     System.out.println("Back to Professor Menu...");
+                    }
                     break;
                 case 3:
-                    System.out.println("\"---------------SEARCH BY INTERESTS--------------\"");
-                    abstractSearchMenu();
+                    System.out.println("\"---------------SEARCH STUDENT INTERESTS--------------\"");
+                    // TODO
                     break;
 
                 case 4:
-                    interestSearchMenu();
+                    System.out.println("\"---------------VIEW STUDENT MATCHES--------------\"");
+                    // TODO
                     break;
+                case 5: 
+                    System.out.println("\"---------------VIEW ALL ABSTRACTS--------------\"");
 
             }
         }
-
 
     }
 
@@ -300,8 +335,9 @@ public class PresentationLayer {
             System.out.println("Please select an option: \n" +
                                 "[0] Logout \n" +
                                 "[1] Interests \n" +
-                                "[3] Search by Interests and Abstracts \n" +
-                                "[4] See all Faculty Abstracts");
+                                "[2] View Professor Matches \n" +
+                                "[3] Search by Abstracts \n" +
+                                "[4] View All Abstracts");
             System.out.print("Selection: ");
             int input = GetInput.readInt();
             System.out.println();
@@ -310,75 +346,79 @@ public class PresentationLayer {
                 case 0:
                     running = false;
                     break;
+
                 case 1:
                     System.out.println("---------------YOUR INTERESTS--------------");
                     List<String> updateInterests = dl.getStudentKeywords(student.getAccountID());
-                    for (String interest : updateInterests) {
-                        System.out.println(interest);
+                    if (updateInterests.size() == 0) {
+                        System.out.println("***no interests added***");
+                    } else {
+                        for (String interest : updateInterests) {
+                            System.out.println(interest);
+                        }
                     }
-                    boolean validUpdate = false;
-                    while (!validUpdate) {
-                        System.out.println("Please select an option: \n" +
-                                "[0] Exit \n" +
-                                "[1] Add Interests \n" +
-                                "[2] Delete Interests");
-                        System.out.println();
-                        System.out.print("Selection: ");
-                        int updateInput = GetInput.readInt();
-                        System.out.println();
+                    System.out.println("Please select an option: \n" +
+                            "[0] Exit \n" +
+                            "[1] Add Interests \n" +
+                            "[2] Delete Interests");
+                    System.out.print("Selection: ");
+                    int updateInput = GetInput.readInt();
+                    System.out.println();
 
-                        if (updateInput == 1) {
-                            List<String> addInterests = Arrays.asList(GetInput.readLine().split(", "));
-                            if (dl.addKeywords("student", student.getAccountID(), addInterests) == 1) {
-                                System.out.println("Interests added.");
-                            }
-                            else {
-                                System.out.println("Error adding interests.");
-                            }
+                    if (updateInput == 1) {
+                        System.out.print("Interests to be added (separate by commas): ");
+                        List<String> addInterests = Arrays.asList(GetInput.readLine().split(", "));
+                        if (dl.addKeywords("student", student.getAccountID(), addInterests) != -1) {
+                            System.out.println("Interests added.");
+                        } else {
+                            System.out.println("Error adding interests.");
                         }
-                        if (updateInput == 2) {
-                            List<String> deleteInterests = Arrays.asList(GetInput.readLine().split(", "));
-                            if (dl.deleteKeywords("student", student.getAccountID(), deleteInterests) == 1) {
-                                System.out.println("Interests deleted.");
-                            }
-                            else {
-                                System.out.println("Error deleting interests.");
-                            }
-                        }
-                        else { 
-                            System.out.println("Invalid input");
-                        }
-                        System.out.println("Back to Student Menu...");
                     }
-                    break;
-                case 2:
-                    System.out.println("\"---------------SEARCH BY INTERESTS AND ABSTRACTS--------------\"");
-                    // insert search function here
+                    else if (updateInput == 2) {
+                        System.out.print("Interests to be deleted (separate by commas): ");
+                        List<String> deleteInterests = Arrays.asList(GetInput.readLine().split(", "));
+                        if (dl.deleteKeywords("student", student.getAccountID(), deleteInterests) != -1) {
+                            System.out.println("Interests deleted.");
+                        } else {
+                            System.out.println("Error deleting interests.");
+                        }
+                    }
+                    else if (updateInput != 0) {
+                        System.out.println("Invalid input");
+                    }
                     System.out.println("Back to Student Menu...");
+                    break;
+
+                case 2:
+                    System.out.println("---------------VIEW PROFESSOR MATCHES--------------");
+                    // TODO: viewProfessorMatchesMenu(student.getAccountID());
                     break;
 
                 case 3:
-                    System.out.println("\"---------------ALL ABSTRACTS--------------\"");
-                    // insert getAbstracts function here
-                    System.out.println("Back to Student Menu...");
-
+                    System.out.println("---------------SEARCH BY ABSTRACTS--------------");
+                    abstractSearchMenu();
                     break;
+
+                case 4:
+                    System.out.println("---------------VIEW ALL ABSTRACTS--------------");
+                    // TODO: viewAllAbstractsMenu();
+                    break;
+
+                default:
+                    System.out.println("Invalid input");
             }
         }
-
     }
 
-    public void publicMenu() {
+
+    public void publicMenu(User public_user) {
         System.out.println("---------------PUBLIC MENU--------------");
         boolean running = true;
         while (running) {
             System.out.println("Please select an option: \n" +
                                 "[0] Logout \n" +
-                                "[1] Search by Interests and Abstracts \n" +
-                                "[2] Insert Interests \n" +
-                                "[3] Modify Interests \n" +
-                                "[4] Search by Interests and Abstracts \n" +
-                                "[5] See all Faculty Abstracts");
+                                "[1] View All Abstracts \n" +
+                                "[2] Search by Abstracts");
             System.out.print("Selection: ");
             int input = GetInput.readInt();
             System.out.println();
@@ -387,56 +427,26 @@ public class PresentationLayer {
                 case 0:
                     running = false;
                     break;
+
                 case 1:
-                    System.out.println("\"---------------SEARCH BY INTERESTS AND ABSTRACTS--------------\"");
-                    // insert search function here
+                    System.out.println("---------------VIEW ALL ABSTRACTS--------------");
+                    // TODO: viewAllAbstractsMenu();
                     break;
 
-                case 2: 
-                    System.out.println("\"---------------INSERT INTERESTS--------------\"");
-                    // insert insert interests function here   
-                    List<String> addInterests = Arrays.asList(GetInput.readLine().split(", "));
-                        if (dl.addKeywords("student", student.getAccountID(), addInterests) == 1) {
-                            System.out.println("Interests added.");
-                        }
-                    System.out.print("Enter ");
-
-                case 3:
-                    System.out.println("\"---------------MODIFY INTERESTS--------------\"");
-                    // insert modify interests function here   
-                    System.out.print("Enter ");
-                case 4:
-                    System.out.println("\"---------------SEARCH BY INTERESTS AND ABSTRACTS--------------\"");
-                    // insert search by interests and abstracts function here   
-                    System.out.print("Please enter an interest to search from: ");
-                    String guestInterest = GetInput.readLine();
-
-                    System.out.print("Please enter a title to search from: ");
-                    String guestAbstract = GetInput.readLine();
-
-                    
-
-
-                    System.out.print("Enter ");
-
-                case 5:
-                    System.out.println("\"---------------ALL ABSTRACTS--------------\"");
-                    // insert getAbstracts function here   
-                    System.out.print("Enter Professor ID: ");
-                    int profAccountID = GetInput.readInt();
-                    List<String> abstracts = dl.getAbstract(profAccountID);
-                    for (String i: abstracts){
-                        System.out.println(i);
-                    }
-
+                case 2:
+                    System.out.println("---------------SEARCH BY ABSTRACTS--------------");
+                    abstractSearchMenu();
                     break;
-                default: 
-                    System.out.println("Invalid input.");
+
+                default:
+                    System.out.println("Invalid input");
                     break;
             }
+
             System.out.println("Back to Public Menu...");
         }
     }
+
 
     public void runConnectDatabase() {
         int connected = -1;
@@ -453,6 +463,7 @@ public class PresentationLayer {
             if (dl.connect(databaseName, username, password)) {
                 connected = 1;
             } else {
+                System.exit(0);
                 connected = -1;
             }
         }
@@ -463,5 +474,3 @@ public class PresentationLayer {
         new PresentationLayer();
     }
 }
-
-
