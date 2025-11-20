@@ -532,6 +532,28 @@ public class DataLayer {
 
     public List<Integer> searchProfessorByKeywords(List<String> keywords) {
         List<Integer> professorIDs = new ArrayList<Integer>();
+        StringBuilder sql = new StringBuilder( " SELECT DISTINCT pk.account_id " +
+        "FROM professor_keyword pk JOIN keyword k USING(keyword_id)"  + 
+        "WHERE k.keyword IN (");
+
+        sql.append("?,".repeat(keywords.size()));
+        sql.setLength(sql.length() - 1);
+        sql.append(")");
+
+        try{
+            PreparedStatement pstmt = conn.prepareStatement(sql.toString());
+            for(int i = 0; i < keywords.size(); i++){
+                pstmt.setString(i+1, keywords.get(i));
+            }
+
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                professorIDs.add(rs.getInt(1));
+            }
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+        }
         return professorIDs;
     }
 
