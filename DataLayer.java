@@ -632,7 +632,7 @@ public class DataLayer {
                 }
             }
             sql+=") ";
-            sql+= "ORDER BY account_id, abstract_id";
+            sql+= "ORDER BY account_id, abstract.abstract_id";
             PreparedStatement ptmt = conn.prepareStatement(sql);
             ResultSet rs = ptmt.executeQuery();
 
