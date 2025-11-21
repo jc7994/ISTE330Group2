@@ -2,9 +2,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Base64;
-
+import java.util.HashMap;
+import java.util.Map;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+
+import com.mysql.cj.protocol.Resultset;
 
 public class DataLayer {
     private Connection conn;
@@ -383,11 +386,6 @@ public class DataLayer {
         }
         return result;
     }
-    
-    // ig we aint using this lol
-    public int updateKeywords(String userType, int userID, List<String> keywords) {
-        return 1;
-    }
 
     public int deleteKeywords(String userType, int userID, List<String> keywords) {
         int result = 0; 
@@ -466,10 +464,6 @@ public class DataLayer {
         return abstracts;
     }
 
-    public int addAbstract(String title, List<String> professorsUsernames) {
-        // get the ids from 
-        return 1;
-    }
     public int addAbstract(String title, String text, List<Integer> professorIDs) {
         int result = 0;
         try{
@@ -562,7 +556,7 @@ public class DataLayer {
      * some search methods are limited to certain usertypes
     */
 
-
+    // TODO: return list of professorIDs that match all the keywords
     public List<Integer> searchProfessorByKeywords(List<String> keywords) {
         List<Integer> professorIDs = new ArrayList<Integer>();
         StringBuilder sql = new StringBuilder( " SELECT DISTINCT pk.account_id " +
@@ -590,22 +584,96 @@ public class DataLayer {
         return professorIDs;
     }
 
-    public List<Integer> searchProfessorByAbstract(List<String> keywords) {
-        List<Integer> professorIDs = new ArrayList<Integer>();
-        return professorIDs;
-    }
-
+    // TODO: return list of studentIDs that match all the keywords
     public List<Integer> searchStudentsByKeywords(List<String> keywords) {
         List<Integer> studentIDs = new ArrayList<Integer>();
         return studentIDs;
     }
 
-    // search across any user type using keywords
-    public List<Integer> searchUsers(String searcherType, String targetType, List<String> keywords) {
-        List<Integer> userIDs = new ArrayList<Integer>();
-        return userIDs;
+    // TODO: return a dictionary of <professorIDs, List<abstractIDs>>
+    public List<Integer> searchProfessorByAbstract(List<String> keywords) {
+        List<Integer> professorIDs = new ArrayList<Integer>();
+        return professorIDs;
+    }
+    
+    public String getAllAbstracts() {
+        StringBuilder output = new StringBuilder();
+
+        try {
+            String sql = "SELECT abstract_id, title FROM abstract";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                int abstractID = rs.getInt("abstract_id");
+                String title = rs.getString("title");
+                output.append("Title: ").append(title).append("\n");
+
+                String keysql = 
+                    "SELECT k.keyword FROM keyword k JOIN abstract_keyword ak ON k.keyword_id = ak.keyword_id WHERE ak.abstract_id = ?";
+                PreparedStatement kstmt = conn.prepareStatement(keysql);
+                kstmt.setInt(1, abstractID);
+                ResultSet keyrs = kstmt.executeQuery();
+
+                StringBuilder keywordList = new StringBuilder();
+                while (keyrs.next()) {
+                    if (keywordList.length() > 0) {
+                        keywordList.append(", ");
+                    }
+                    keywordList.append(keyrs.getString("keyword"));
+                }
+                keyrs.close();
+
+                if (keywordList.length() == 0) {
+                    output.append("Keywords: None\n");
+                } else {
+                    output.append("Keywords: ").append(keywordList).append("\n");
+                }
+
+                String profSql = 
+                    "SELECT p.first_name, p.last_name " +
+                    "FROM professor p " + 
+                    "JOIN professor_abstract pa ON p.account_id = pa.account_id " +
+                    "WHERE pa.abstract_id = ?";
+                PreparedStatement profStmt = conn.prepareStatement(profSql);
+                profStmt.setInt(1, abstractID);
+                ResultSet profRs = profStmt.executeQuery();
+
+                StringBuilder profList = new StringBuilder();
+                while (profRs.next()) {
+                    if (profList.length() > 0) {
+                        profList.append(", ");
+                    }
+                    profList.append(profRs.getString("first_name")).append(" ").append(profRs.getString("last_name"));
+                }
+                profRs.close();
+
+                if (profList.length() == 0) {
+                    output.append("Professors: None\n");
+                } else {
+                    output.append("Professors: ").append(profList).append("\n");
+                }
+                output.append("\n");
+            }
+            rs.close();
+        } catch (Exception e) {
+            return "Error getting abstract details: " + e.getMessage();
+        }
+        return output.toString();
     }
 
+    // TODO: return the IDs of all students who match at least one keyword with at least one keyword from the prof's abstracts
+    public List<Integer> getStudentMatches(int professorID) {
+        List<Integer> studentIDs = new ArrayList<Integer>();
+        return studentIDs;
+    }
+
+    // TODO: return the IDs of all professors who match at least one keyword from their abstract with at least one of the students' keywords
+    public List<Integer> getProfessorMatches(int studentID) {
+        List<Integer> professorIDs = new ArrayList<Integer>();
+        return professorIDs;
+    }
+
+    // implement this with the getProfessorMatches in presentation layer
     public String getProfessorContactInfo(int professorID) {
         String result = "";
         String profEmail = "";
@@ -629,6 +697,7 @@ public class DataLayer {
         return result;
     }
 
+    // implement this with the getStudentMatches in presentation layer
     public String getStudentContactInfo(int studentID) {
         String result = "";
         String studentEmail = "";
@@ -643,8 +712,7 @@ public class DataLayer {
             }
             pstmt.close();
             rs.close();
-        }
-        catch(SQLException e){
+        } catch(SQLException e){
             System.out.println("Error getting contact info: " + e.getMessage());
         }
         result = "Student ID " + studentID + " Contact Info: \nEmail: " + studentEmail;
