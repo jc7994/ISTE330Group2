@@ -619,7 +619,7 @@ public class DataLayer {
         // return professorIDs;
         Map<Integer, List<Integer>> profAbstracts = new HashMap<>();
         try{
-            String sql = "SELECT account_id, abstract_id FROM professor_abstract ";
+            String sql = "SELECT account_id, abstract.abstract_id FROM professor_abstract ";
             sql+= "JOIN abstract ON professor_abstract.abstract_id = abstract.abstract_id ";
             sql+= "WHERE abstract.abstract IN (";
             for(int i=0;i<keywords.size();i++ ){
