@@ -637,8 +637,8 @@ public class DataLayer {
             ResultSet rs = ptmt.executeQuery();
 
             while (rs.next()){
-                int profID = rs.getInt("account_id");
-                int abstractID = rs.getInt("abstract_id");
+                int profID = rs.getInt("professor_abstract.account_id");
+                int abstractID = rs.getInt("abstract.abstract_id");
 
                 List<Integer> abstractList;
                 if (profAbstracts.containsKey(profID)){
