@@ -621,7 +621,17 @@ public class DataLayer {
         try{
             String sql = "SELECT account_id, abstract_id FROM professor_abstract ";
             sql+= "JOIN abstract ON professor_abstract.abstract_id = abstract.abstract_id ";
-            sql+= "WHERE abstract.abstract = ? ";
+            sql+= "WHERE abstract.abstract IN (";
+            for(int i=0;i<keywords.size();i++ ){
+                String keyword=keywords.get(i);
+                if(i!=keywords.size()-1){
+                    sql+=keyword+", ";
+                }
+                else{
+                    sql+=keyword;
+                }
+            }
+            sql+=") ";
             sql+= "ORDER BY account_id, abstract_id";
             PreparedStatement ptmt = conn.prepareStatement(sql);
             ResultSet rs = ptmt.executeQuery();
