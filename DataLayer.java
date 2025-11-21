@@ -773,7 +773,7 @@ public class DataLayer {
             String sql = "SELECT DISTINCT account.account_id FROM professor_abstract "
             + "JOIN professor ON professor_abstract.account_id = professor.account_id "
             + "JOIN account ON professor.account_id = account.account_id "
-            + "WHERE professor_keyword.keyword_id "
+            + "WHERE professor.keyword_id "
             + "IN(SELECT keyword_id FROM student_keyword WHERE student_keyword.account_id = ?)";
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
