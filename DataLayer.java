@@ -606,7 +606,7 @@ public class DataLayer {
             stmt.close();
         }
         catch (SQLException sqle){
-            System.out.println("Error searching for students by keywords: " + e.getMessage());
+            System.out.println("Error searching for students by keywords: " + sqle.getMessage());
         }
         return studentIDs;
     }
@@ -619,9 +619,9 @@ public class DataLayer {
         Map<Integer, List<Integer>> profAbstracts = new HashMap<>();
         try{
             String sql = "SELECT account_id, abstract_id FROM professor_abstract ";
-            + "JOIN abstract ON professor_abstract.abstract_id = abstract.abstract_id ";
-            + "WHERE abstract.abstract = ? ";
-            + "ORDER BY account_id, abstract_id";
+            sql+= "JOIN abstract ON professor_abstract.abstract_id = abstract.abstract_id ";
+            sql+= "WHERE abstract.abstract = ? ";
+            sql+= "ORDER BY account_id, abstract_id";
             PreparedStatement ptmt = conn.prepareStatement(sql);
             ResultSet rs = ptmt.executeQuery();
 
@@ -642,7 +642,7 @@ public class DataLayer {
         
         } 
         catch (SQLException sqle) {
-            return "Error getting abstract details: " + e.getMessage();
+            System.out.println("Error getting abstract details: " + sqle.getMessage());
         }
         return profAbstracts;
     }
@@ -726,7 +726,7 @@ public class DataLayer {
             }
         }
         catch (SQLException sqle){
-            System.out.println("Error matching students with professor's keywords: " + e.getMessage());
+            System.out.println("Error matching students with professor's keywords: " + sqle.getMessage());
         }
 
         return studentIDs;
