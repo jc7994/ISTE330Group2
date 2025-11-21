@@ -168,7 +168,7 @@ INSERT INTO account (username, password, user_type) VALUES
 ('mock_public', 'p@ss', 'public'),
 ('mock_prof_1', '123pass', 'professor'),
 ('mock_prof_2', '234pass', 'professor'),
-('mock_prof_2', '345pass', 'professor');
+('mock_prof_3', '345pass', 'professor');
 
 -- student
 INSERT INTO student (account_id, first_name, last_name, email, gpa) VALUES
