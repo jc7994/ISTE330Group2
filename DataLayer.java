@@ -101,7 +101,7 @@ public class DataLayer {
                     profStmt.setString(3, lastName);
                     profStmt.setString(4, email);
                     profStmt.setString(5, building);
-                    profStmt.setString(6, building);
+                    profStmt.setString(6, office);
 
                     profStmt.executeUpdate();
                     return true;
