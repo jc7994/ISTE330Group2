@@ -161,87 +161,80 @@ CREATE TABLE professor_abstract (
 
 -- MOCK DATA
 
--- account creation
-INSERT INTO account (username, password, user_type) VALUES
-('mock_student_1', 'pass123', 'student'),
-('mock_student_2', 'pass234', 'student'),
-('mock_public', 'p@ss', 'public'),
-('mock_prof_1', '123pass', 'professor'),
-('mock_prof_2', '234pass', 'professor'),
-('mock_prof_3', '345pass', 'professor');
+USE project;
 
--- student
+-- accounts
+INSERT INTO account (username, password, user_type) VALUES
+('student1', 'pass123', 'student'),
+('student2', 'pass123', 'student'),
+('prof1', 'pass123', 'professor'),
+('prof2', 'pass123', 'professor'),
+('prof3', 'pass123', 'professor'),
+('public1', 'pass123', 'public');
+
+-- students
 INSERT INTO student (account_id, first_name, last_name, email, gpa) VALUES
-(1, 'John', 'Doe', 'jdoe@uni.edu', 3.40),
-(2, 'Jane', 'Matthews', 'jmat@uni.edu', 3.75);
+(1, 'Alice', 'Smith', 'alice@example.com', 3.8),
+(2, 'Bob', 'Johnson', 'bob@example.com', 3.5);
 
 -- professors
 INSERT INTO professor (account_id, first_name, last_name, building_number, office_number, email) VALUES
-(4, 'Alan', 'Smith', '12', '205', 'asmith@uni.edu'),
-(5, 'Betty', 'Jones', '10', '314', 'bjones@uni.edu'),
-(6, 'Carol', 'Lee', '22', '127', 'clee@uni.edu');
+(3, 'Dr.', 'Anderson', 'B1', '101', 'anderson@example.com'),
+(4, 'Dr.', 'Brown', 'B2', '102', 'brown@example.com'),
+(5, 'Dr.', 'Clark', 'B3', '103', 'clark@example.com');
 
--- public
+-- public users
 INSERT INTO public (account_id, first_name, last_name, email) VALUES
-(3, 'random', 'person', 'rm@gmail.com');
+(6, 'Charlie', 'Davis', 'charlie@example.com');
 
 -- keywords
 INSERT INTO keyword (keyword) VALUES
 ('Java'),
 ('C'),
-('Python'),
-('C#'),
-('SQL'),
-('Machine Learning'),
-('HTML'),
-('Data Mining'),
 ('Statistics'),
-('Neural Networks');
+('Python'),
+('SQL'),
+('HTML'),
+('Machine Learning'),
+('Networking'),
+('Security');
 
 -- student keywords
 INSERT INTO student_keyword (account_id, keyword_id) VALUES
-(1, 1),
-(1, 4),
-(1, 8),
-(2, 3),
-(2, 5);
+(1, 1), -- Alice: Java
+(1, 5), -- Alice: SQL
+(2, 4), -- Bob: Python
+(2, 5); -- Bob: SQL
 
 -- professor keywords
 INSERT INTO professor_keyword (account_id, keyword_id) VALUES
-(4, 1),
-(4, 9),
-(5, 3),
-(5, 7),
-(6, 5),
-(6, 6);
+(3, 1), -- Anderson: Java
+(3, 7), -- Anderson: ML
+(4, 4), -- Brown: Python
+(4, 5), -- Brown: SQL
+(5, 5), -- Clark: SQL
+(5, 6); -- Clark: HTML
 
+-- abstracts
 INSERT INTO abstract (title, abstract_text) VALUES
-('Neural Network Optimization Techniques',
- 'This paper explores approaches for improving training time and accuracy of deep neural architectures.'),
-('Secure Distributed Database Systems',
- 'We present a new approach to designing distributed database storage with enhanced cyber protections.'),
-('Machine Learning for Network Intrusion Detection',
- 'Using ML models, this study analyzes live network data to predict potential security breaches.');
+('Neural Network Optimization Techniques', 'Optimizing neural networks.'),
+('Secure Distributed Database Systems', 'Securing distributed DBs.'),
+('Machine Learning for Network Intrusion Detection', 'ML for intrusion detection.');
 
+-- abstract keywords
 INSERT INTO abstract_keyword (abstract_id, keyword_id) VALUES
-(1, 1),
-(1, 2),
-(1, 9);
+(1, 1), -- Neural Net: Java
+(1, 2), -- Neural Net: C
+(1, 3), -- Neural Net: Stats
+(2, 4), -- Secure DB: Python
+(2, 5), -- Secure DB: SQL
+(2, 6), -- Secure DB: HTML
+(3, 1), -- ML Intrusion: Java
+(3, 5), -- ML Intrusion: SQL
+(3, 7); -- ML Intrusion: ML
 
-INSERT INTO abstract_keyword (abstract_id, keyword_id) VALUES
-(2, 3),
-(2, 7),
-(2, 5);
-
-INSERT INTO abstract_keyword (abstract_id, keyword_id) VALUES
-(3, 1),
-(3, 5),
-(3, 6);
-
--- FIX:
--- INSERT INTO professor_abstract (account_id, abstract_id) VALUES
--- (4, 1),
--- (6, 1),
--- (5, 2),
--- (6, 3),
--- (4, 3);
+-- professor abstracts
+INSERT INTO professor_abstract (account_id, abstract_id) VALUES
+(3, 1), -- Anderson: Neural Net
+(4, 2), -- Brown: Secure DB
+(5, 3); -- Clark: ML Intrusion

@@ -2,6 +2,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class PresentationLayer {
     DataLayer dl = new DataLayer();
@@ -60,10 +61,29 @@ public class PresentationLayer {
     }
 
     public void abstractSearchMenu() {
-        System.out.println("\"---------------SEARCH ABSTRACTS--------------\"");
+        System.out.println("---------------SEARCH ABSTRACTS--------------");
         System.out.print("Please enter an interest to search from: ");
         List<String> interests = Arrays.asList(GetInput.readLine().split(", "));
-        System.out.println(dl.searchProfessorByAbstract(interests));
+        // Map <Integer (professor id), List<Integer> (list of abstract ids)>
+        Map<Integer, List<Integer>> prof_abs = dl.searchProfessorByAbstract(interests);
+
+        if (prof_abs.isEmpty()) {
+            System.out.println("** no results **");
+        }
+
+        for (int prof_id : prof_abs.keySet()) { // for each professor in the map
+            System.out.println(dl.getProfessorContactInfo(prof_id));
+            System.out.print("Abstracts: ");
+            for (int abs_id : prof_abs.get(prof_id)) { // for each abstract of the professor
+                System.out.print(" | " + dl.getAbstractTitleFromID(abs_id) + " | ");
+            }
+            if (prof_abs.get(prof_id).isEmpty()) {
+                System.out.println(" ** no abstracts ** ");
+            }
+            System.out.println();
+            System.out.println();
+        }
+       
     }
 
     public User loginMenu() {

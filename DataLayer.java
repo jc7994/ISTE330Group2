@@ -1,3 +1,4 @@
+//import com.mysql.cj.protocol.Resultset;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,8 +8,7 @@ import java.util.Map;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-//import com.mysql.cj.protocol.Resultset;
-import java.sql.ResultSet;
+import com.mysql.cj.protocol.Resultset;
 
 public class DataLayer {
     private Connection conn;
@@ -443,6 +443,23 @@ public class DataLayer {
 
     /* abstract management */
 
+    public String getAbstractTitleFromID(int abstract_id) {
+        String title = "";
+        String sql = "SELECT abstract.title FROM abstract WHERE abstract.abstract_id = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, abstract_id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                title = rs.getString("title");
+            }
+            rs.close();
+        } catch (Exception e) {
+            System.out.println("Error getting abstract title " + e.getMessage());
+        }
+        return title;
+
+    }
+
     public List<String> getAbstract(int profAccountID) {
         // return list of abstract titles
         List<String> abstracts = new ArrayList<>();
@@ -621,9 +638,11 @@ public class DataLayer {
         try{
             String sql = "SELECT account_id, abstract.abstract_id FROM professor_abstract ";
             sql+= "JOIN abstract ON professor_abstract.abstract_id = abstract.abstract_id ";
-            sql+= "WHERE abstract.abstract IN (";
+            sql+= "JOIN abstract_keyword ON abstract.abstract_id = abstract_keyword.abstract_id ";
+            sql+= "JOIN keyword on abstract_keyword.keyword_id = keyword.keyword_id ";
+            sql+= "WHERE keyword.keyword IN ( ";
             for(int i=0;i<keywords.size();i++ ){
-                String keyword=keywords.get(i);
+                String keyword= "'" + keywords.get(i) + "'";
                 if(i!=keywords.size()-1){
                     sql+=keyword+", ";
                 }
@@ -648,6 +667,9 @@ public class DataLayer {
                     abstractList = new ArrayList<>();
                     profAbstracts.put(profID,abstractList);
                 }
+
+                abstractList.add(abstractID);
+
 
             }
         
