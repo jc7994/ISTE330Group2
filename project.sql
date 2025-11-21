@@ -127,6 +127,22 @@ CREATE TABLE abstract (
     PRIMARY KEY (abstract_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- abstract_keyword junction (many-to-many for abstracts and keywords)
+DROP TABLE IF EXISTS abstract_keyword;
+CREATE TABLE abstract_keyword (
+    abstract_id INT(11) NOT NULL,
+    keyword_id INT(11) NOT NULL,
+    PRIMARY KEY (abstract_id, keyword_id),
+    CONSTRAINT fk_abs_key_abstract FOREIGN KEY (abstract_id)
+        REFERENCES abstract(abstract_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    CONSTRAINT fk_abs_key_keyword FOREIGN KEY (keyword_id)
+        REFERENCES keyword(keyword_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- professor_abstract junction (multiple authors)
 DROP TABLE IF EXISTS professor_abstract;
 CREATE TABLE professor_abstract (
@@ -142,3 +158,90 @@ CREATE TABLE professor_abstract (
         ON DELETE CASCADE
         ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- MOCK DATA
+
+-- account creation
+INSERT INTO account (username, password, user_type) VALUES
+('mock_student_1', 'pass123', 'student'),
+('mock_student_2', 'pass234', 'student'),
+('mock_public', 'p@ss', 'public'),
+('mock_prof_1', '123pass', 'professor'),
+('mock_prof_2', '234pass', 'professor'),
+('mock_prof_2', '345pass', 'professor');
+
+-- student
+INSERT INTO student (account_id, first_name, last_name, email, gpa) VALUES
+(1, 'John', 'Doe', 'jdoe@uni.edu', 3.40),
+(2, 'Jane', 'Matthews', 'jmat@uni.edu', 3.75);
+
+-- professors
+INSERT INTO professor (account_id, first_name, last_name, building_number, office_number, email) VALUES
+(4, 'Alan', 'Smith', '12', '205', 'asmith@uni.edu'),
+(5, 'Betty', 'Jones', '10', '314', 'bjones@uni.edu'),
+(6, 'Carol', 'Lee', '22', '127', 'clee@uni.edu');
+
+-- public
+INSERT INTO public (account_id, first_name, last_name, email) VALUES
+(3, 'random', 'person', 'rm@gmail.com');
+
+-- keywords
+INSERT INTO keyword (keyword) VALUES
+('Java'),
+('C'),
+('Python'),
+('C#'),
+('SQL'),
+('Machine Learning'),
+('HTML'),
+('Data Mining'),
+('Statistics'),
+('Neural Networks');
+
+-- student keywords
+INSERT INTO student_keyword (account_id, keyword_id) VALUES
+(1, 1),
+(1, 4),
+(1, 8),
+(2, 3),
+(2, 5);
+
+-- professor keywords
+INSERT INTO professor_keyword (account_id, keyword_id) VALUES
+(4, 1),
+(4, 9),
+(5, 3),
+(5, 7),
+(6, 5),
+(6, 6);
+
+INSERT INTO abstract (title, abstract_text) VALUES
+('Neural Network Optimization Techniques',
+ 'This paper explores approaches for improving training time and accuracy of deep neural architectures.'),
+('Secure Distributed Database Systems',
+ 'We present a new approach to designing distributed database storage with enhanced cyber protections.'),
+('Machine Learning for Network Intrusion Detection',
+ 'Using ML models, this study analyzes live network data to predict potential security breaches.');
+
+INSERT INTO abstract_keyword (abstract_id, keyword_id) VALUES
+(1, 1),
+(1, 2),
+(1, 9);
+
+INSERT INTO abstract_keyword (abstract_id, keyword_id) VALUES
+(2, 3),
+(2, 7),
+(2, 5);
+
+INSERT INTO abstract_keyword (abstract_id, keyword_id) VALUES
+(3, 1),
+(3, 5),
+(3, 6);
+
+-- FIX:
+-- INSERT INTO professor_abstract (account_id, abstract_id) VALUES
+-- (4, 1),
+-- (6, 1),
+-- (5, 2),
+-- (6, 3),
+-- (4, 3);

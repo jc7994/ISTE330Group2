@@ -37,16 +37,33 @@ public class PresentationLayer {
     }
 
     public void interestSearchMenu() {
-        System.out.println("\"---------------SEARCH BY INTERESTS--------------\"");
+        System.out.println("\"---------------SEARCH PROFESSORS/STUDENTS BY INTERESTS--------------\"");
         System.out.print("Please enter an interest to search from: ");
-        String input = GetInput.readLine();
+        List<String> interests = Arrays.asList(GetInput.readLine().split(", "));
 
+        System.out.println("PROFESSORS");
+        List<Integer> professors = dl.searchProfessorByKeywords(interests);
+        for (Integer professorID : professors) {
+            System.out.println(dl.getProfessorContactInfo(professorID));
+        }
+        if (professors.size() == 0) { System.out.println("No results. "); }
+
+        System.out.println("STUDENTS");
+        List<Integer> students = dl.searchStudentsByKeywords(interests);
+        for (Integer studentID : students) {
+            System.out.println(dl.getProfessorContactInfo(studentID));
+        }
+        if (students.size() == 0) { System.out.println("No results. "); }
+
+        System.out.println("Back to Menu...");
+        System.out.println();
     }
 
     public void abstractSearchMenu() {
-        System.out.println("\"---------------SEARCH BY ABSTRACTS--------------\"");
-        System.out.print("Please enter a title to search from: ");
-        String input = GetInput.readLine();
+        System.out.println("\"---------------SEARCH ABSTRACTS--------------\"");
+        System.out.print("Please enter an interest to search from: ");
+        List<String> interests = Arrays.asList(GetInput.readLine().split(", "));
+        System.out.println(dl.searchProfessorByAbstract(interests));
     }
 
     public User loginMenu() {
@@ -81,6 +98,10 @@ public class PresentationLayer {
                     }
                     catch (SQLException e) {
                         System.out.println(e.getMessage());
+                    }
+
+                    if (user == null) {
+                        System.out.println("Wrong credentials.");
                     }
                     break;
                 case 1: // register option
@@ -312,16 +333,25 @@ public class PresentationLayer {
                     }
                     break;
                 case 3:
-                    System.out.println("\"---------------SEARCH STUDENT INTERESTS--------------\"");
-                    // TODO
+                    interestSearchMenu();
                     break;
 
                 case 4:
-                    System.out.println("\"---------------VIEW STUDENT MATCHES--------------\"");
-                    // TODO
+                    System.out.println("---------------VIEW STUDENT MATCHES--------------");
+                    List<Integer> students = dl.getStudentMatches(professor.getAccountID());
+                    for (int studentID : students) {
+                        System.out.println(dl.getStudentContactInfo(studentID));
+                    }
+                    if (students.size() == 0) { System.out.println("No matches."); }
                     break;
                 case 5: 
-                    System.out.println("\"---------------VIEW ALL ABSTRACTS--------------\"");
+                    System.out.println("---------------VIEW ALL ABSTRACTS--------------");
+                    System.out.println(dl.getAllAbstracts());
+
+                    break;
+                default:
+                    System.out.println("Invalid input");
+                    break;
 
             }
         }
@@ -336,7 +366,7 @@ public class PresentationLayer {
                                 "[0] Logout \n" +
                                 "[1] Interests \n" +
                                 "[2] View Professor Matches \n" +
-                                "[3] Search by Abstracts \n" +
+                                "[3] Search Abstracts \n" +
                                 "[4] View All Abstracts");
             System.out.print("Selection: ");
             int input = GetInput.readInt();
@@ -391,21 +421,32 @@ public class PresentationLayer {
 
                 case 2:
                     System.out.println("---------------VIEW PROFESSOR MATCHES--------------");
-                    // TODO: viewProfessorMatchesMenu(student.getAccountID());
+                    List<Integer> professors = dl.getProfessorMatches(student.getAccountID());
+                    for (int professorID : professors) {
+                        System.out.println(dl.getProfessorContactInfo(professorID));
+                    }
+                    if (professors.size() == 0) { System.out.println("No matches."); }
                     break;
 
                 case 3:
-                    System.out.println("---------------SEARCH BY ABSTRACTS--------------");
                     abstractSearchMenu();
                     break;
 
                 case 4:
                     System.out.println("---------------VIEW ALL ABSTRACTS--------------");
-                    // TODO: viewAllAbstractsMenu();
+                    String abstracts = dl.getAllAbstracts();
+                    if (abstracts != null) {
+                        System.out.println(abstracts);
+                    }
+                    else {
+                        System.out.println("** no abstracts **");
+                    }
+                    
                     break;
 
                 default:
                     System.out.println("Invalid input");
+                    break;
             }
         }
     }
@@ -417,7 +458,7 @@ public class PresentationLayer {
             System.out.println("Please select an option: \n" +
                                 "[0] Logout \n" +
                                 "[1] View All Abstracts \n" +
-                                "[2] Search by Abstracts");
+                                "[2] Search Abstracts");
             System.out.print("Selection: ");
             int input = GetInput.readInt();
             System.out.println();
@@ -429,11 +470,11 @@ public class PresentationLayer {
 
                 case 1:
                     System.out.println("---------------VIEW ALL ABSTRACTS--------------");
-                    // TODO: viewAllAbstractsMenu();
+                    dl.getAllAbstracts();
                     break;
 
                 case 2:
-                    System.out.println("---------------SEARCH BY ABSTRACTS--------------");
+                    System.out.println("---------------SEARCH ABSTRACTS--------------");
                     abstractSearchMenu();
                     break;
 
