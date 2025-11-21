@@ -500,7 +500,7 @@ public class DataLayer {
         int result = 0;
         try{
             conn.setAutoCommit(false); 
-            sql = "UPDATE abstract SET title = ? , abstract_text = ? WHERE abstract_id = ?";
+            String sql = "UPDATE abstract SET title = ? , abstract_text = ? WHERE abstract_id = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, title);
             pstmt.setString(2, text);
@@ -587,13 +587,64 @@ public class DataLayer {
     // TODO: return list of studentIDs that match all the keywords
     public List<Integer> searchStudentsByKeywords(List<String> keywords) {
         List<Integer> studentIDs = new ArrayList<Integer>();
+
+        if (keywords.isEmpty()){
+            return studentIDs;
+        }
+
+        try {
+            String sql = "SELECT student_keyword.account_id "
+            + "FROM keyword JOIN student_keyword ON keyword.keyword_id = student_keyword.keyword_id "
+            + "WHERE keyword.keyword IN(?) GROUP BY student_key.account_id";    
+
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                studentIDs.add(rs.getInt("student_id"));
+            }
+            rs.close();
+            stmt.close();
+        }
+        catch (SQLException sqle){
+            System.out.println("Error searching for students by keywords: " + e.getMessage());
+        }
         return studentIDs;
     }
 
     // TODO: return a dictionary of <professorIDs, List<abstractIDs>>
-    public List<Integer> searchProfessorByAbstract(List<String> keywords) {
-        List<Integer> professorIDs = new ArrayList<Integer>();
-        return professorIDs;
+    //public List<Integer> searchProfessorByAbstract(List<String> keywords) {
+    public Map<Integer, List<Integer>> searchProfessorByAbstract(List<String> keywords) {
+        // List<Integer> professorIDs = new ArrayList<Integer>();
+        // return professorIDs;
+        Map<Integer, List<Integer>> profAbstracts = new HashMap<>();
+        try{
+            String sql = "SELECT account_id, abstract_id FROM professor_abstract ";
+            + "JOIN abstract ON professor_abstract.abstract_id = abstract.abstract_id ";
+            + "WHERE abstract.abstract = ? ";
+            + "ORDER BY account_id, abstract_id";
+            PreparedStatement ptmt = conn.prepareStatement(sql);
+            ResultSet rs = ptmt.executeQuery();
+
+            while (rs.next()){
+                int profID = rs.getInt("account_id");
+                int abstractID = rs.getInt("abstract_id");
+
+                List<Integer> abstractList;
+                if (profAbstracts.containsKey(profID)){
+                    abstractList = profAbstracts.get(profID);
+                }
+                else{
+                    abstractList = new ArrayList<>();
+                    profAbstracts.put(profID,abstractList);
+                }
+
+            }
+        
+        } 
+        catch (SQLException sqle) {
+            return "Error getting abstract details: " + e.getMessage();
+        }
+        return profAbstracts;
     }
     
     public String getAllAbstracts() {
@@ -670,6 +721,13 @@ public class DataLayer {
     // TODO: return the IDs of all professors who match at least one keyword from their abstract with at least one of the students' keywords
     public List<Integer> getProfessorMatches(int studentID) {
         List<Integer> professorIDs = new ArrayList<Integer>();
+        // try{
+
+        // }
+        // catch (SQLException sqle){
+        //     System.out.println("Error matching professors with student's keywords: " + e.getMessage());
+        // }
+
         return professorIDs;
     }
 
