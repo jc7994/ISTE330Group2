@@ -82,7 +82,7 @@ public class DataLayer {
 
     public boolean registerProfessor(String username, String password, String firstName, String lastName, String email, String building, String office) throws SQLException {
         try {
-            String insertAccount = "INSERT INTO account(username, password, user_type) VALUES (?, ?, 'student')";
+            String insertAccount = "INSERT INTO account(username, password, user_type) VALUES (?, ?, 'professor')";
             PreparedStatement accountStmt = conn.prepareStatement(insertAccount, Statement.RETURN_GENERATED_KEYS);
             accountStmt.setString(1, username);
             accountStmt.setString(2, password);
@@ -115,7 +115,7 @@ public class DataLayer {
 
     public boolean registerPublic(String username, String password, String firstName, String lastName, String email) throws SQLException {
         try {
-            String insertAccount = "INSERT INTO account(username, password, user_type) VALUES (?, ?, 'student')";
+            String insertAccount = "INSERT INTO account(username, password, user_type) VALUES (?, ?, 'public')";
             PreparedStatement accountStmt = conn.prepareStatement(insertAccount, Statement.RETURN_GENERATED_KEYS);
             accountStmt.setString(1, username);
             accountStmt.setString(2, password);
@@ -446,9 +446,9 @@ public class DataLayer {
     public List<String> getAbstract(int profAccountID) {
         // return list of abstract titles
         List<String> abstracts = new ArrayList<>();
-        sql="SELECT abstract.title FROM professor"; 
-        sql+="JOIN professor_abstract ON professor.account_id = professor_abstract.account_id";
-        sql+="JOIN abstract ON professor_abstract.abstact_id = abstract.abstract_id";
+        sql="SELECT abstract.title FROM professor "; 
+        sql+="JOIN professor_abstract ON professor.account_id = professor_abstract.account_id ";
+        sql+="JOIN abstract ON professor_abstract.abstact_id = abstract.abstract_id ";
         sql+="WHERE professor.account_id = ? ORDER BY abstract.title ASC";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, profAccountID);
@@ -561,7 +561,7 @@ public class DataLayer {
     public List<Integer> searchProfessorByKeywords(List<String> keywords) {
         List<Integer> professorIDs = new ArrayList<Integer>();
         StringBuilder sql = new StringBuilder( " SELECT DISTINCT pk.account_id " +
-        "FROM professor_keyword pk JOIN keyword k USING(keyword_id)"  + 
+        "FROM professor_keyword pk JOIN keyword k USING(keyword_id) "  + 
         "WHERE k.keyword IN (");
 
         sql.append("?,".repeat(keywords.size()));
