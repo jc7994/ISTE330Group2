@@ -86,7 +86,7 @@ public class PresentationLayer {
                 case 1: // register option
                     System.out.println("---------------REGISTER--------------");
                     System.out.print("User Type (Professor, Student, or Public): ");
-                    String userType = GetInput.readWord();
+                    String userType = GetInput.readWord().toLowerCase();
                     System.out.println();
 
                     System.out.print("First Name: ");
@@ -410,7 +410,6 @@ public class PresentationLayer {
         }
     }
 
-
     public void publicMenu(User public_user) {
         System.out.println("---------------PUBLIC MENU--------------");
         boolean running = true;
@@ -446,7 +445,6 @@ public class PresentationLayer {
             System.out.println("Back to Public Menu...");
         }
     }
-
 
     public void runConnectDatabase() {
         int connected = -1;
