@@ -164,13 +164,14 @@ CREATE TABLE professor_abstract (
 USE project;
 
 -- accounts
-INSERT INTO account (username, password, user_type) VALUES
-('student1', 'pass123', 'student'),
-('student2', 'pass123', 'student'),
-('prof1', 'pass123', 'professor'),
-('prof2', 'pass123', 'professor'),
-('prof3', 'pass123', 'professor'),
-('public1', 'pass123', 'public');
+INSERT INTO account (username, password, user_type) VALUES -- all passwords set to pass123  
+('student1', 'a1jkuZz7+i4rYhI1Xms0QA==', 'student'),
+('student2', 'j8T+9VxoD8hHgXvlvOqE0Q==', 'student'),
+('prof1', 'VnHk+vG6lxe4A0pZta8cNQ==', 'professor'),
+('prof2', 'UebZ+1zqTYpphSxGzLwLOg==', 'professor'),
+('prof3', 'R9+O/7uK/7iX0a0QwT0P2A==', 'professor'),
+('public1', 'xHj+Lz2v/5uX4Z2g+KkqWQ==', 'public');
+
 
 -- students
 INSERT INTO student (account_id, first_name, last_name, email, gpa) VALUES

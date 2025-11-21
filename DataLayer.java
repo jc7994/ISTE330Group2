@@ -319,6 +319,50 @@ public class DataLayer {
         return result;
     } // end of getStudentKeywords.
 
+    
+    public int addKeywordsToAbstract(int abstract_id, List<String> keywords) {
+        int result = 0;
+        try {
+            String selectKeywordSql = "SELECT keyword_id FROM keyword WHERE keyword = ? ";
+            PreparedStatement selectStmt = conn.prepareStatement(selectKeywordSql);
+
+            String insertKeywordSql = "INSERT INTO (keyword) VALUES (?)";
+            PreparedStatement insertKeywordStmt = conn.prepareStatement(insertKeywordSql);
+
+            String insertAbstractKeywordSql = "INSERT INTO abstract_keyword (abstract_id, keyword_id) VALUES (?, ?) " + 
+                "ON DUPLICATE KEY UPDATE abstract_id = abstract_id";
+            PreparedStatement insertAbstractKeywordStmt = conn.prepareStatement(insertAbstractKeywordSql);
+
+            for (String kw : keywords) {
+                int keywordID = -1;
+                selectStmt.setString(1, kw);
+                ResultSet rs = selectStmt.executeQuery();
+                if (rs.next()) {
+                    keywordID = rs.getInt("keyword_id");
+                } else {
+                    insertKeywordStmt.setString(1, kw);
+                    insertKeywordStmt.executeUpdate();
+                    ResultSet generatedKeys = insertKeywordStmt.getGeneratedKeys();
+                    if (generatedKeys.next()) {
+                        keywordID = generatedKeys.getInt(0);
+                    }
+                    generatedKeys.close();
+                }
+                rs.close();
+
+                if (keywordID != -1) {
+                    insertAbstractKeywordStmt.setInt(1 , abstract_id);
+                    insertAbstractKeywordStmt.setInt(2, keywordID);
+                    result += insertAbstractKeywordStmt.executeUpdate();
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error adding keywords to abstract: " + e.getMessage());
+            return -1;
+        }
+        return result;
+    }
+
     public int addKeywords(String userType, int userID, List<String> keywords) {
         int result = 0;
         try{
@@ -465,14 +509,14 @@ public class DataLayer {
         List<String> abstracts = new ArrayList<>();
         sql="SELECT abstract.title FROM professor "; 
         sql+="JOIN professor_abstract ON professor.account_id = professor_abstract.account_id ";
-        sql+="JOIN abstract ON professor_abstract.abstact_id = abstract.abstract_id ";
+        sql+="JOIN abstract ON professor_abstract.abstract_id = abstract.abstract_id ";
         sql+="WHERE professor.account_id = ? ORDER BY abstract.title ASC";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, profAccountID);
             
             ResultSet rs = stmt.executeQuery(); 
             while (rs.next()) {
-                abstracts.add(rs.getString("Abstract Title"));
+                abstracts.add(rs.getString("abstract.title"));
             }
             
         }
@@ -483,35 +527,35 @@ public class DataLayer {
     }
 
     public int addAbstract(String title, String text, List<Integer> professorIDs) {
-        int result = 0;
+        int abstractID = -1;
         try{
             sql = "INSERT INTO abstract(title, abstract_text) VALUES(?,?)";
             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             pstmt.setString(1, title);
             pstmt.setString(2, text);
-            result = pstmt.executeUpdate();
+            pstmt.executeUpdate();
 
             // get the generated abstract ID 
             ResultSet rs = pstmt.getGeneratedKeys();
-            int abstractID = -1;
+            
             if(rs.next()){
                 abstractID = rs.getInt(1);
             }
             rs.close();
 
-            sql = "INSERT INTO professor_abstract(professor_id, abstract_id) VALUES(?,?)";
+            sql = "INSERT INTO professor_abstract(account_id, abstract_id) VALUES(?,?)";
             pstmt = conn.prepareStatement(sql);
             for(int profID : professorIDs){
                 pstmt.setInt(1, profID);
                 pstmt.setInt(2, abstractID);
-                result += pstmt.executeUpdate();
+                pstmt.executeUpdate();
             }
 
         }
         catch(SQLException e){
             System.out.println("Error adding abstract: " + e.getMessage());
         }
-        return result;
+        return abstractID;
     }
 
     public int updateAbstract(int abstractID, String title, String text, List<Integer> professorIDs) {
@@ -611,14 +655,26 @@ public class DataLayer {
         }
 
         try {
+            String inClause = "";
+            for (int i = 0; i < keywords.size(); i++) {
+                inClause += "?";
+                if (i < keywords.size() - 1) {
+                    inClause += ", ";
+                }
+            }
             String sql = "SELECT student_keyword.account_id "
             + "FROM keyword JOIN student_keyword ON keyword.keyword_id = student_keyword.keyword_id "
-            + "WHERE keyword.keyword IN(?) GROUP BY student_key.account_id";    
+            + "WHERE keyword.keyword IN(" + inClause + ") GROUP BY student_keyword.account_id";    
 
             PreparedStatement stmt = conn.prepareStatement(sql);
+
+            for (int i = 0; i < keywords.size(); i++) {
+                stmt.setString(i + 1, keywords.get(i));
+            }
+            
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                studentIDs.add(rs.getInt("student_id"));
+                studentIDs.add(rs.getInt("account_id"));
             }
             rs.close();
             stmt.close();
@@ -750,7 +806,7 @@ public class DataLayer {
         List<Integer> studentIDs = new ArrayList<Integer>();
         try{
            String sql = "SELECT DISTINCT student_keyword.keyword_id "
-            + "FROM student_keyword WHERE student_keyword.keyword_id IN(SELECT keyword_id FROM professor_keyword WHERE professor_keyword.accout_id = ?)";
+            + "FROM student_keyword WHERE student_keyword.keyword_id IN(SELECT keyword_id FROM professor_keyword WHERE professor_keyword.account_id = ?)";
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1,professorID);

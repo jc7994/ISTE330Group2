@@ -46,13 +46,14 @@ public class PresentationLayer {
         List<Integer> professors = dl.searchProfessorByKeywords(interests);
         for (Integer professorID : professors) {
             System.out.println(dl.getProfessorContactInfo(professorID));
+            System.out.println();
         }
         if (professors.size() == 0) { System.out.println("No results. "); }
 
         System.out.println("STUDENTS");
         List<Integer> students = dl.searchStudentsByKeywords(interests);
         for (Integer studentID : students) {
-            System.out.println(dl.getProfessorContactInfo(studentID));
+            System.out.println(dl.getStudentContactInfo(studentID));
         }
         if (students.size() == 0) { System.out.println("No results. "); }
 
@@ -327,27 +328,18 @@ public class PresentationLayer {
                             String text = GetInput.readLine();
 
                             int added = dl.addAbstract(title, text, professorIDs);
-                            if (added == 1) {
+                            if (added != 1) {
                                 System.out.println("Added abstract.");
                             }
                             else {
                                 System.out.println("Error adding abstract.");
                             }
-                        
-                    }
-                    else if (updateInput == 2) { 
-                        System.out.println("Enter abstract title to delete: ");
-                        String removeTitle = GetInput.readLine();
-                        int removed = 0; // TODO: = dl.deleteAbstract(removeTitle);
-                        if (removed == 1) {
-                            System.out.println("Abstract deleted.");
-                        }
-                        else {
-                            System.out.println("Error deleting abstract.");
-                        }
-                    }
-                    else {
-                        System.out.println("Invalid input");
+
+                            System.out.print("Enter abstract interests: ");
+                            List<String> interests = Arrays.asList(GetInput.readLine().split(", "));
+                            if (dl.addKeywordsToAbstract(added, interests) != -1) {
+                                System.out.println("Keywords added.");
+                            } else { System.out.println("Error adding keywords."); }
                     }
                     System.out.println("Back to Professor Menu...");
                     }
