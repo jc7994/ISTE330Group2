@@ -7,7 +7,8 @@ import java.util.Map;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
-import com.mysql.cj.protocol.Resultset;
+//import com.mysql.cj.protocol.Resultset;
+import java.sql.ResultSet;
 
 public class DataLayer {
     private Connection conn;
@@ -719,6 +720,7 @@ public class DataLayer {
            String sql = "SELECT DISTINCT student_keyword.keyword_id "
             + "FROM student_keyword WHERE student_keyword.keyword_id IN(SELECT keyword_id FROM professor_keyword)";
 
+            PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1,professorID);
             rs = pstmt.executeQuery();
             while (rs.next()){
@@ -742,6 +744,7 @@ public class DataLayer {
             + "WHERE professor_keyword "
             + "IN(SELECT keyword_id FROM student_keyword WHERE student_keyword.keyword_id = ?)";
 
+            PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1,studentID);
             rs = pstmt.executeQuery();
             while (rs.next()){
@@ -749,7 +752,7 @@ public class DataLayer {
             }
         }
         catch (SQLException sqle){
-            System.out.println("Error matching professors with student's keywords: " + e.getMessage());
+            System.out.println("Error matching professors with student's keywords: " + sqle.getMessage());
         }
 
         return professorIDs;
