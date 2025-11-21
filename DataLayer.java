@@ -715,18 +715,42 @@ public class DataLayer {
     // TODO: return the IDs of all students who match at least one keyword with at least one keyword from the prof's abstracts
     public List<Integer> getStudentMatches(int professorID) {
         List<Integer> studentIDs = new ArrayList<Integer>();
+        try{
+           String sql = "SELECT DISTINCT student_keyword.keyword_id "
+            + "FROM student_keyword WHERE student_keyword.keyword_id IN(SELECT keyword_id FROM professor_keyword)";
+
+            pstmt.setInt(1,professorID);
+            rs = pstmt.executeQuery();
+            while (rs.next()){
+                studentIDs.add(rs.getInt("account_id"));
+            }
+        }
+        catch (SQLException sqle){
+            System.out.println("Error matching students with professor's keywords: " + e.getMessage());
+        }
+
         return studentIDs;
     }
 
     // TODO: return the IDs of all professors who match at least one keyword from their abstract with at least one of the students' keywords
     public List<Integer> getProfessorMatches(int studentID) {
         List<Integer> professorIDs = new ArrayList<Integer>();
-        // try{
+        try{
+            String sql = "SELECT DISTINCT account.account_id FROM professor_abstract "
+            + "JOIN professor ON professor_abstract.account_id = professor.account_id "
+            + "JOIN account ON professor.account_id = account.account_id "
+            + "WHERE professor_keyword "
+            + "IN(SELECT keyword_id FROM student_keyword WHERE student_keyword.keyword_id = ?)";
 
-        // }
-        // catch (SQLException sqle){
-        //     System.out.println("Error matching professors with student's keywords: " + e.getMessage());
-        // }
+            pstmt.setInt(1,studentID);
+            rs = pstmt.executeQuery();
+            while (rs.next()){
+                professorIDs.add(rs.getInt("account_id"));
+            }
+        }
+        catch (SQLException sqle){
+            System.out.println("Error matching professors with student's keywords: " + e.getMessage());
+        }
 
         return professorIDs;
     }
