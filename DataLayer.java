@@ -800,6 +800,7 @@ public class DataLayer {
         List<Integer> studentIDs = new ArrayList<Integer>();
         try{
             String sql = "SELECT DISTINCT account.account_id FROM student "
+            + "JOIN account ON student.account_id = account.account_id "
             + "JOIN student_keyword ON student.account_id = student_keyword.account_id "
             + "JOIN keyword ON student_keyword.keyword_id = keyword.keyword_id "
             + "JOIN professor_keyword ON keyword.keyword_id = professor_keyword.keyword_id "
