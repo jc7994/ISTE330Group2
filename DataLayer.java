@@ -799,10 +799,10 @@ public class DataLayer {
     public List<Integer> getStudentMatches(int professorID) {
         List<Integer> studentIDs = new ArrayList<Integer>();
         try{
-           String sql = "SELECT DISTINCT student_keyword.keyword_id "
-            + "FROM student_keyword WHERE student_keyword.keyword_id "
+           String sql = "SELECT DISTINCT student_keyword.keyword_id FROM student_keyword "
             + "JOIN keyword ON student_keyword.keyword_id = keyword.keyword_id "
             + "JOIN professor_keyword ON keyword.keyword_id = professor_keyword.keyword_id "
+            + "WHERE student_keyword.keyword_id "
             + "IN(SELECT keyword_id FROM professor_keyword WHERE professor_keyword.account_id = ?)";
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
