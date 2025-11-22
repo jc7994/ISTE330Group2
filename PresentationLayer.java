@@ -109,7 +109,7 @@ public class PresentationLayer {
                     String loginUsername = GetInput.readWord();
                     System.out.print("password: ");
                     String loginPassword = GetInput.readWord();
-                    loginPassword = dl.hashPassword(loginPassword, DataLayer.generateSalt(loginUsername));
+                    loginPassword = dl.hashPassword(loginPassword);
 
                     try {
                         valid = dl.validateLogin(loginUsername, loginPassword);
@@ -149,7 +149,7 @@ public class PresentationLayer {
 
                     System.out.print("Password: ");
                     String registerPassword = GetInput.readWord();
-                    registerPassword = dl.hashPassword(registerPassword, DataLayer.generateSalt(registerUsername));
+                    registerPassword = dl.hashPassword(registerPassword);
                     System.out.println();
 
                     switch(userType) {

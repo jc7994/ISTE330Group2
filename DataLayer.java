@@ -247,22 +247,16 @@ public class DataLayer {
         return null;
     }
 
-    // hashing using the salt method 
-    public static String generateSalt(String username) {
-        StringBuilder salt = new StringBuilder();
-        for (int i = 0; i < username.length(); i+=2){
-            salt.append(username.charAt(i));
-        }
-        return salt.toString();
-    }
-
-    public String hashPassword(String rawPassword, String salt) {
-        // use BCrypt to hash maybe
+    public String hashPassword(String rawPassword) {
         try{
-            PBEKeySpec spec = new PBEKeySpec(rawPassword.toCharArray(), salt.getBytes(), 65536, 128);
-            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            byte[] hash = factory.generateSecret(spec).getEncoded();
-            return Base64.getEncoder().encodeToString(hash);
+            java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+            byte[] hash = md.digest(rawPassword.getBytes());
+
+            StringBuilder hex = new StringBuilder();
+            for (byte b : hash) {
+                hex.append(String.format("%02x", b));
+            }
+            return hex.toString();
         }
         catch(Exception e ){
             throw new RuntimeException("Error hashing password", e);
