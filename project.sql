@@ -165,12 +165,12 @@ USE project;
 
 -- accounts
 INSERT INTO account (username, password, user_type) VALUES -- all passwords set to pass123  
-('student1', 'a1jkuZz7+i4rYhI1Xms0QA==', 'student'),
-('student2', 'j8T+9VxoD8hHgXvlvOqE0Q==', 'student'),
-('prof1', 'VnHk+vG6lxe4A0pZta8cNQ==', 'professor'),
-('prof2', 'UebZ+1zqTYpphSxGzLwLOg==', 'professor'),
-('prof3', 'R9+O/7uK/7iX0a0QwT0P2A==', 'professor'),
-('public1', 'xHj+Lz2v/5uX4Z2g+KkqWQ==', 'public');
+('student1', '32250170a0dca92d53ec9624f336ca24', 'student'),
+('student2', '32250170a0dca92d53ec9624f336ca24', 'student'),
+('prof1', '32250170a0dca92d53ec9624f336ca24', 'professor'),
+('prof2', '32250170a0dca92d53ec9624f336ca24', 'professor'),
+('prof3', '32250170a0dca92d53ec9624f336ca24', 'professor'),
+('public1', '32250170a0dca92d53ec9624f336ca24', 'public');
 
 
 -- students
