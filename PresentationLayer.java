@@ -482,11 +482,11 @@ public class PresentationLayer {
 
                 case 1:
                     System.out.println("---------------VIEW ALL ABSTRACTS--------------");
-                    dl.getAllAbstracts();
+                    System.out.println(dl.getAllAbstracts());
                     break;
 
                 case 2:
-                    System.out.println("---------------SEARCH ABSTRACTS--------------");
+                    // System.out.println("---------------SEARCH ABSTRACTS--------------");
                     abstractSearchMenu();
                     break;
 
