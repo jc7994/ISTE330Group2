@@ -1,4 +1,18 @@
-//import com.mysql.cj.protocol.Resultset;
+/*
+    Group Project Deliverable 2 - ISTE 330
+	
+    Group 2:
+        Chen, Jennifer
+        Donalds, Chris
+        Earle, Rhys
+        Gee, Kristen
+        Gomes, Marissa
+        Labranche, Roosevelt
+ 
+	ISTE 330
+	FALL 2025
+*/
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,3 +1,18 @@
+/*
+    Group Project Deliverable 2 - ISTE 330
+	
+    Group 2:
+        Chen, Jennifer
+        Donalds, Chris
+        Earle, Rhys
+        Gee, Kristen
+        Gomes, Marissa
+        Labranche, Roosevelt
+ 
+	ISTE 330
+	FALL 2025
+*/
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,27 +29,29 @@ public class PresentationLayer {
 
         runConnectDatabase();
         System.out.print("Welcome to the Faculty Research Database! \n");
-        User currentUser = null;
-        while (currentUser == null) {
-            currentUser = loginMenu();
+        
+        while (true) {
+            User currentUser = null;
+            while (currentUser == null) {
+                currentUser = loginMenu();
+            }
+
+            System.out.println("Welcome, " + currentUser.getUsername() + "!");
+
+            switch (currentUser.getUserType()) {
+                case "professor": 
+                    professorMenu(currentUser);
+                    break;
+                case "student":
+                    studentMenu(currentUser);
+                    break;
+                case "public":
+                    publicMenu(currentUser);
+                    break;
+            }
+
+            // currentUser = loginMenu();
         }
-
-        System.out.println("Welcome, " + currentUser.getUsername() + "!");
-
-        switch (currentUser.getUserType()) {
-            case "professor": 
-                professorMenu(currentUser);
-                break;
-            case "student":
-                studentMenu(currentUser);
-                break;
-            case "public":
-                publicMenu(currentUser);
-                break;
-        }
-
-        currentUser = loginMenu();
-
     }
 
     public void interestSearchMenu() {
