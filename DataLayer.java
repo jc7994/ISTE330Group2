@@ -850,14 +850,18 @@ public class DataLayer {
     public String getProfessorContactInfo(int professorID) {
         String result = "";
         String profEmail = "";
+        String profBuilding = "";
+        String profOffice = "";
         try{
-            sql = "SELECT email FROM professor WHERE account_id = ?";
+            sql = "SELECT email, building_number, office_number FROM professor WHERE account_id = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1,professorID);
             rs = pstmt.executeQuery();
 
             if (rs.next()){
                 profEmail = rs.getString("email");
+                profBuilding = rs.getString("building_number");
+                profOffice = rs.getString("office_number");
             }
             pstmt.close();
             rs.close();
@@ -865,7 +869,9 @@ public class DataLayer {
         catch(SQLException e){
             System.out.println("Error getting contact info: " + e.getMessage());
         }
-        result = "Professor ID " + professorID + " Contact Info: \nEmail: " + profEmail;
+        result = "Professor ID " + professorID + "\n\tContact Info: \n\t\tEmail: " + profEmail;
+        result += "\n\t\tBuilding: " + profBuilding;
+        result += "\n\t\tOffice: " + profOffice;
 
         return result;
     }
