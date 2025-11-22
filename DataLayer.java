@@ -863,11 +863,12 @@ public class DataLayer {
     // implement this with the getProfessorMatches in presentation layer
     public String getProfessorContactInfo(int professorID) {
         String result = "";
+        String profName = "";
         String profEmail = "";
         String profBuilding = "";
         String profOffice = "";
         try{
-            sql = "SELECT email, building_number, office_number FROM professor WHERE account_id = ?";
+            sql = "SELECT first_name, last_name, email, building_number, office_number FROM professor WHERE account_id = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1,professorID);
             rs = pstmt.executeQuery();
@@ -876,6 +877,8 @@ public class DataLayer {
                 profEmail = rs.getString("email");
                 profBuilding = rs.getString("building_number");
                 profOffice = rs.getString("office_number");
+                profName = rs.getString("first_name");
+                profName += " " + rs.getString("last_name");
             }
             pstmt.close();
             rs.close();
@@ -883,7 +886,9 @@ public class DataLayer {
         catch(SQLException e){
             System.out.println("Error getting contact info: " + e.getMessage());
         }
-        result = "Professor ID " + professorID + "\n\tContact Info: \n\t\tEmail: " + profEmail;
+        result = "Professor ID " + professorID + "\n\tContact Info:";
+        result += "\n\t\tName: " + profName;
+        result += "\n\t\tEmail: " + profEmail;
         result += "\n\t\tBuilding: " + profBuilding;
         result += "\n\t\tOffice: " + profOffice;
 
