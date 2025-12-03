@@ -436,6 +436,7 @@ public class DataLayer {
         }
         catch(Exception e){
             System.out.println("Error adding keywords: " + e.getMessage());
+            return -1;
         }
         return result;
     }

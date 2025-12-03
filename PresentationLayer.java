@@ -184,7 +184,7 @@ public class PresentationLayer {
 
                             try {
                                 if (dl.registerProfessor(registerUsername, registerPassword, firstName, lastName, email, building, office)) {
-                                    user = prof;
+                                    user = dl.getUserByUsername(registerUsername);;
                                 }
                             } catch (SQLException e) {
                                 System.out.println("Error registering professor: " + e.getMessage());
@@ -200,7 +200,7 @@ public class PresentationLayer {
                             student.setUsername(registerUsername);
                             try {
                                 if (dl.registerStudent(registerUsername, registerPassword, firstName, lastName, email, gpa)) {
-                                    user = student;
+                                    user = dl.getUserByUsername(registerUsername);;
                                 }
                             } catch (SQLException e) {
                                 System.out.println("Error registering student: " + e.getMessage());
@@ -213,7 +213,7 @@ public class PresentationLayer {
                             publicAcc.setUsername(registerUsername);
                             try {
                                 if (dl.registerPublic(registerUsername, registerPassword, firstName, lastName, email)) {
-                                    user = publicAcc;
+                                    user = dl.getUserByUsername(registerUsername);
                                 }
                             } catch (SQLException e) {
                                 System.out.println("Error registering student: " + e.getMessage());
@@ -282,7 +282,10 @@ public class PresentationLayer {
                         }
                         else if (updateInput == 1) {
                             System.out.print("Interests to be added (separate by commas): ");
-                            List<String> addInterests = Arrays.asList(GetInput.readLine().split(", "));
+                            List<String> addInterests = Arrays.asList(GetInput.readLine().split(","));
+                            for (int i = 0; i < addInterests.size(); i++) {
+                                addInterests.set(i, addInterests.get(i).trim());
+                            }
                             System.out.println();
                             if (dl.addKeywords("professor", professor.getAccountID(), addInterests) != -1) {
                                     System.out.println("Interests added.");
@@ -353,8 +356,11 @@ public class PresentationLayer {
                             }
 
                             System.out.print("Enter abstract interests: ");
-                            List<String> interests = Arrays.asList(GetInput.readLine().split(", "));
-                            if (dl.addKeywordsToAbstract(added, interests) != -1) {
+                            List<String> addInterests = Arrays.asList(GetInput.readLine().split(","));
+                            for (int i = 0; i < addInterests.size(); i++) {
+                                addInterests.set(i, addInterests.get(i).trim());
+                            }
+                            if (dl.addKeywordsToAbstract(added, addInterests) != -1) {
                                 System.out.println("Keywords added.");
                             } else { System.out.println("Error adding keywords."); }
                     }
@@ -426,7 +432,10 @@ public class PresentationLayer {
 
                     if (updateInput == 1) {
                         System.out.print("Interests to be added (separate by commas): ");
-                        List<String> addInterests = Arrays.asList(GetInput.readLine().split(", "));
+                        List<String> addInterests = Arrays.asList(GetInput.readLine().split(","));
+                        for (int i = 0; i < addInterests.size(); i++) {
+                            addInterests.set(i, addInterests.get(i).trim());
+                        }
                         if (dl.addKeywords("student", student.getAccountID(), addInterests) != -1) {
                             System.out.println("Interests added.");
                         } else {
