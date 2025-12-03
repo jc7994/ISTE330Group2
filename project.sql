@@ -23,7 +23,7 @@ CREATE TABLE account (
     account_id INT(11) NOT NULL AUTO_INCREMENT, 
     username VARCHAR(45) NOT NULL,
     password VARCHAR(150) NOT NULL,
-    user_type ENUM('student','professor','public') NOT NULL,
+    user_type ENUM('student','professor','public', 'outside_student') NOT NULL,
     PRIMARY KEY (account_id),
     UNIQUE KEY username_UNIQUE (username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -71,6 +71,23 @@ CREATE TABLE public (
     PRIMARY KEY (account_id),
     UNIQUE KEY email_UNIQUE (email),
     CONSTRAINT fk_public_account FOREIGN KEY (account_id)
+        REFERENCES account(account_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Unsure if school is needed here
+DROP TABLE IF EXISTS outside_student;
+CREATE TABLE outside_student (
+    account_id INT(11) NOT NULL,
+    first_name VARCHAR(45) NOT NULL,
+    last_name VARCHAR(45) NOT NULL,
+    email VARCHAR(45) NOT NULL,
+    gpa DECIMAL(3,2) DEFAULT NULL,
+    school VARCHAR(45) NOT NULL,
+    PRIMARY KEY (account_id),
+    UNIQUE KEY email_UNIQUE (email),
+    CONSTRAINT fk_outside_student_account FOREIGN KEY (account_id)
         REFERENCES account(account_id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
@@ -133,6 +150,22 @@ CREATE TABLE public_keyword (
         ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+DROP TABLE IF EXISTS outside_student_keyword;
+CREATE TABLE outside_student_keyword (
+    account_id INT(11) NOT NULL,
+    keyword_id INT(11) NOT NULL,
+    PRIMARY KEY (account_id, keyword_id),
+    CONSTRAINT fk_outside_student_key_account FOREIGN KEY (account_id)
+        REFERENCES outside_student(account_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    CONSTRAINT fk_outside_student_key_keyword FOREIGN KEY (keyword_id)
+        REFERENCES keyword(keyword_id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- abstract table
 DROP TABLE IF EXISTS abstract;
 CREATE TABLE abstract (
@@ -185,13 +218,20 @@ INSERT INTO account (username, password, user_type) VALUES -- all passwords set 
 ('prof1', '32250170a0dca92d53ec9624f336ca24', 'professor'),
 ('prof2', '32250170a0dca92d53ec9624f336ca24', 'professor'),
 ('prof3', '32250170a0dca92d53ec9624f336ca24', 'professor'),
-('public1', '32250170a0dca92d53ec9624f336ca24', 'public');
-
+('public1', '32250170a0dca92d53ec9624f336ca24', 'public'),
+-- Testing for outside students.
+('urstudent1', '32250170a0dca92d53ec9624f336ca24', 'outside_student'),
+('monroestudent1', '32250170a0dca92d53ec9624f336ca24', 'outside_student');
 
 -- students
 INSERT INTO student (account_id, first_name, last_name, email, gpa) VALUES
 (1, 'Alice', 'Smith', 'alice@example.com', 3.8),
 (2, 'Bob', 'Johnson', 'bob@example.com', 3.5);
+
+-- outside students
+INSERT INTO outside_student (account_id, first_name, last_name, email, gpa, school) VALUES
+(7, 'Jane', 'Doe', 'janedoe@rochester.edu', 4.0, "University of Rochester"),
+(8, 'John', 'Doe', 'jdoe@monroecollege.edu', 3.1, "Monroe Community College");
 
 -- professors
 INSERT INTO professor (account_id, first_name, last_name, building_number, office_number, email) VALUES
@@ -221,6 +261,11 @@ INSERT INTO student_keyword (account_id, keyword_id) VALUES
 (1, 5), -- Alice: SQL
 (2, 4), -- Bob: Python
 (2, 5); -- Bob: SQL
+
+
+INSERT INTO outside_student_keyword (account_id, keyword_id) VALUES
+(7, 1), -- Jane: Java
+(8, 1); -- John: Java
 
 -- professor keywords
 INSERT INTO professor_keyword (account_id, keyword_id) VALUES
