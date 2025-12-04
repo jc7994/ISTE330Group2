@@ -374,8 +374,17 @@ public class PresentationLayer {
                 case 4:
                     System.out.println("---------------VIEW STUDENT MATCHES--------------");
                     List<Integer> students = dl.getStudentMatches(professor.getAccountID());
+                    List<String> profKeyWords = dl.getProfessorKeywords(professor.getAccountID());
                     for (int studentID : students) {
                         System.out.println(dl.getStudentContactInfo(studentID));
+
+                        List<String> studentInterests = dl.getStudentKeywords(studentID);
+                        System.out.println("Interests: " + String.join(", ", studentInterests));
+
+                        List<String> sharedInterests = new ArrayList<>(profKeyWords);
+                        sharedInterests.retainAll(studentInterests);
+                        System.out.println("Shared Interests: " + String.join(", ", sharedInterests));
+                        System.out.println();
                     }
                     if (students.size() == 0) { System.out.println("No matches."); }
                     break;
