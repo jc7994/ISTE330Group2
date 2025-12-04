@@ -303,6 +303,26 @@ public class DataLayer {
         return result;
     } // end of getProfessorKeywords.
 
+    public List<String> getPublicKeywords(int accountID) {
+        List<String> result = new ArrayList<>();
+        String sql = "SELECT k.keyword from public_keyword pk JOIN keyword k ON pk.keyword_id = k.keyword_id WHERE pk.account_id = ? ORDER BY k.keyword ASC";
+        // Not sure if the ORDER BY is necessary but its still good QoL
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, accountID);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    result.add(rs.getString("keyword"));
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getting professor keywords: " + e.getMessage());
+        }
+
+        return result;
+    }
+
     /**
      * @param accountID         The account id of the student.
      * @return                  List of student keywords.
@@ -627,7 +647,7 @@ public class DataLayer {
      * some search methods are limited to certain usertypes
     */
 
-    // TODO: return list of professorIDs that match all the keywords
+    // return list of professorIDs that match all the keywords
     public List<Integer> searchProfessorByKeywords(List<String> keywords) {
         List<Integer> professorIDs = new ArrayList<Integer>();
         StringBuilder sql = new StringBuilder( " SELECT DISTINCT pk.account_id " +
@@ -655,7 +675,7 @@ public class DataLayer {
         return professorIDs;
     }
 
-    // TODO: return list of studentIDs that match all the keywords
+    // return list of studentIDs that match all the keywords
     public List<Integer> searchStudentsByKeywords(List<String> keywords) {
         List<Integer> studentIDs = new ArrayList<Integer>();
 
@@ -694,8 +714,7 @@ public class DataLayer {
         return studentIDs;
     }
 
-    // TODO: return a dictionary of <professorIDs, List<abstractIDs>>
-    //public List<Integer> searchProfessorByAbstract(List<String> keywords) {
+    // return a dictionary of <professorIDs, List<abstractIDs>>
     public Map<Integer, List<Integer>> searchProfessorByAbstract(List<String> keywords) {
         // List<Integer> professorIDs = new ArrayList<Integer>();
         // return professorIDs;
@@ -810,8 +829,8 @@ public class DataLayer {
         return output.toString();
     }
 
-    // TODO: return the IDs of all students who match at least one keyword with at least one keyword from the prof's abstracts
-    public List<Integer> getStudentMatches(int professorID) {
+    // return the IDs of all students who match at least one keyword with at least one keyword from the prof's abstracts
+    public List<Integer> getStudentMatchesForProfessor(int professorID) {
         List<Integer> studentIDs = new ArrayList<Integer>();
         try{
             String sql = "SELECT DISTINCT account.account_id FROM student "
@@ -836,8 +855,15 @@ public class DataLayer {
         return studentIDs;
     }
 
-    // TODO: return the IDs of all professors who match at least one keyword from their abstract with at least one of the students' keywords
-    public List<Integer> getProfessorMatches(int studentID) {
+    public List<Integer> getStudentMatchesForPublic(int publicID) {
+        List<Integer> studentIDs = new ArrayList<Integer>();
+        // TODO: implementation
+
+        return studentIDs;
+    }
+
+    // return the IDs of all professors who match at least one keyword from their abstract with at least one of the students' keywords
+    public List<Integer> getProfessorMatchesForStudent(int studentID) {
         List<Integer> professorIDs = new ArrayList<Integer>();
         try{
             String sql = "SELECT DISTINCT account.account_id FROM professor_abstract "

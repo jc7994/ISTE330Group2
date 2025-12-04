@@ -267,6 +267,10 @@ public class PresentationLayer {
                     for (String interest : updateInterests) {
                         System.out.println(interest);
                     }
+                    if (updateInterests.size() == 0) {
+                        System.out.println("***no interests added***");
+                    }
+
                     boolean updatingInterests = true;
                     while (updatingInterests) {
                         System.out.println("Please select an option: \n" +
@@ -373,7 +377,7 @@ public class PresentationLayer {
 
                 case 4:
                     System.out.println("---------------VIEW STUDENT MATCHES--------------");
-                    List<Integer> students = dl.getStudentMatches(professor.getAccountID());
+                    List<Integer> students = dl.getStudentMatchesForProfessor(professor.getAccountID());
                     List<String> profKeyWords = dl.getProfessorKeywords(professor.getAccountID());
                     for (int studentID : students) {
                         System.out.println(dl.getStudentContactInfo(studentID));
@@ -467,7 +471,7 @@ public class PresentationLayer {
 
                 case 2:
                     System.out.println("---------------VIEW PROFESSOR MATCHES--------------");
-                    List<Integer> professors = dl.getProfessorMatches(student.getAccountID());
+                    List<Integer> professors = dl.getProfessorMatchesForStudent(student.getAccountID());
                     List<String> studentKeyWords = dl.getStudentKeywords(student.getAccountID());
                     for (int professorID : professors) {
                         System.out.println(dl.getProfessorContactInfo(professorID));
@@ -512,7 +516,9 @@ public class PresentationLayer {
             System.out.println("Please select an option: \n" +
                                 "[0] Logout \n" +
                                 "[1] View All Abstracts \n" +
-                                "[2] Search Abstracts");
+                                "[2] Search Abstracts \n" +
+                                "[3] Interests \n" +
+                                "[4] View Student Matches");
             System.out.print("Selection: ");
             int input = GetInput.readInt();
             System.out.println();
@@ -531,7 +537,74 @@ public class PresentationLayer {
                     // System.out.println("---------------SEARCH ABSTRACTS--------------");
                     abstractSearchMenu();
                     break;
+                case 3:
+                    System.out.println("---------------YOUR INTERESTS--------------");
+                    List<String> updateInterests = dl.getPublicKeywords(public_user.getAccountID());
+                    if (updateInterests.size() == 0) {
+                        System.out.println("***no interests added***");
+                    }
+                    for (String interest : updateInterests) {
+                        System.out.println(interest);
+                    }
+                    boolean updatingInterests = true;
+                    while (updatingInterests) {
+                        System.out.println("Please select an option: \n" +
+                                "[0] Exit \n" +
+                                "[1] Add Interests \n" +
+                                "[2] Delete Interests");
+                        System.out.print("Selection: ");
+                        int updateInput = GetInput.readInt();
+                        System.out.println();
 
+                        if (updateInput == 0) {
+                            updatingInterests = false;
+                        }
+                        else if (updateInput == 1) {
+                            System.out.print("Interests to be added (separate by commas): ");
+                            List<String> addInterests = Arrays.asList(GetInput.readLine().split(","));
+                            for (int i = 0; i < addInterests.size(); i++) {
+                                addInterests.set(i, addInterests.get(i).trim());
+                            }
+                            System.out.println();
+                            if (dl.addKeywords("public", public_user.getAccountID(), addInterests) != -1) {
+                                    System.out.println("Interests added.");
+                                }
+                            else {
+                                System.out.println("Error adding interests.");
+                            }
+                        }
+                        else if (updateInput == 2) {
+                            System.out.print("Interests to be deleted (separate by commas): ");
+                            List<String> deleteInterests = Arrays.asList(GetInput.readLine().split(", "));
+                            System.out.println();
+                            if (dl.deleteKeywords("public", public_user.getAccountID(), deleteInterests) != -1) {
+                                System.out.println("Interests deleted.");
+                            }
+                            else {
+                                System.out.println("Error deleting interests.");
+                            }
+                        }
+                        else { 
+                            System.out.println("Invalid input");
+                        }
+                    }
+                    break;
+                case 4:
+                    System.out.println("---------------VIEW STUDENT MATCHES--------------");
+                    List<Integer> students = dl.getStudentMatchesForProfessor(public_user.getAccountID());
+                    List<String> publicKeywords = dl.getPublicKeywords(public_user.getAccountID());
+                    for (int studentID : students) {
+                        System.out.println(dl.getStudentContactInfo(studentID));
+
+                        List<String> studentInterests = dl.getStudentKeywords(studentID);
+
+                        List<String> sharedInterests = new ArrayList<>(publicKeywords);
+                        sharedInterests.retainAll(studentInterests);
+                        System.out.println("Shared Interests: " + String.join(", ", sharedInterests));
+                        System.out.println();
+                    }
+                    if (students.size() == 0) { System.out.println("No matches."); }
+                    break;
                 default:
                     System.out.println("Invalid input");
                     break;
