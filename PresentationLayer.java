@@ -178,26 +178,21 @@ public class PresentationLayer {
                     System.out.println();
                     break;
                 case 1: // register option
-                    System.out.println("---------------REGISTER--------------");
+                    System.out.println("---------------REGISTER--------------\n");
                     System.out.print("User Type (Professor, Student, or Public): ");
                     String userType = GetInput.readWord().toLowerCase();
-                    System.out.println();
 
                     System.out.print("First Name: ");
                     String firstName = GetInput.readWord();
-                    System.out.println();
 
                     System.out.print("Last Name: ");
                     String lastName = GetInput.readWord();
-                    System.out.println();
 
                     System.out.print("Email: ");
                     String email = GetInput.readWord();
-                    System.out.println();
 
                     System.out.print("Username: ");
                     String registerUsername = GetInput.readWord();
-                    System.out.println();
 
                     System.out.print("Password: ");
                     String registerPassword = GetInput.readWord();
@@ -209,11 +204,9 @@ public class PresentationLayer {
                             User prof = new User();
                             System.out.print("Building Number: ");
                             String building = GetInput.readWord();
-                            System.out.println();
 
                             System.out.print("Office Number: ");
                             String office = GetInput.readWord();
-                            System.out.println();
                             prof.setUserType(userType);
                             prof.setUsername(registerUsername);
 
@@ -229,7 +222,6 @@ public class PresentationLayer {
                             User student = new User();
                             System.out.print("GPA: ");
                             Double gpa = GetInput.readDouble();
-                            System.out.println();
 
                             student.setUserType(userType);
                             student.setUsername(registerUsername);
@@ -251,7 +243,7 @@ public class PresentationLayer {
                                     user = dl.getUserByUsername(registerUsername);
                                 }
                             } catch (SQLException e) {
-                                System.out.println("Error registering student: " + e.getMessage());
+                                System.out.println("Error registering public: " + e.getMessage());
                             }
                             break;
                         default:
