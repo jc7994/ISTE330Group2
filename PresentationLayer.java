@@ -525,7 +525,7 @@ public class PresentationLayer {
                     break;
 
                 case 3:
-                    abstractSearchMenuProfessors();
+                    abstractSearchMenu();
                     break;
 
                 case 4:
