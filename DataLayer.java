@@ -945,21 +945,24 @@ public class DataLayer {
     public String getStudentContactInfo(int studentID) {
         String result = "";
         String studentEmail = "";
+        String studName = "";
         try{
-            sql = "SELECT email FROM student WHERE account_id = ?";
+            sql = "SELECT first_name, last_name, email FROM student WHERE account_id = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1,studentID);
             rs = pstmt.executeQuery();
 
             if (rs.next()){
                 studentEmail = rs.getString("email");
+                studName = rs.getString("first_name");
+                studName += " " + rs.getString("last_name");
             }
             pstmt.close();
             rs.close();
         } catch(SQLException e){
             System.out.println("Error getting contact info: " + e.getMessage());
         }
-        result = "Student ID " + studentID + " Contact Info: \nEmail: " + studentEmail;
+        result = "Student ID " + studentID + " Contact Info: \nName: " + studName + "\nEmail: " + studentEmail;
 
         return result;
     }

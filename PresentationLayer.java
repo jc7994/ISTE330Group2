@@ -155,7 +155,7 @@ public class PresentationLayer {
 
             switch (input) {
                 case 0: // login option
-                    System.out.println("---------------LOGIN--------------");
+                    System.out.println("---------------LOGIN--------------\n");
                     System.out.print("username: ");
                     String loginUsername = GetInput.readWord();
                     System.out.print("password: ");
@@ -631,7 +631,7 @@ public class PresentationLayer {
                     break;
                 case 4:
                     System.out.println("---------------VIEW STUDENT MATCHES--------------");
-                    List<Integer> students = dl.getStudentMatchesForProfessor(public_user.getAccountID());
+                    List<Integer> students = dl.getStudentMatchesForPublic(public_user.getAccountID());
                     List<String> publicKeywords = dl.getPublicKeywords(public_user.getAccountID());
                     for (int studentID : students) {
                         System.out.println(dl.getStudentContactInfo(studentID));
