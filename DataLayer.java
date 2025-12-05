@@ -774,7 +774,7 @@ public class DataLayer {
         StringBuilder output = new StringBuilder();
 
         try {
-            String sql = "SELECT abstract_id, title FROM abstract";
+            String sql = "SELECT abstract_id, title, abstract_text FROM abstract";
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -802,6 +802,9 @@ public class DataLayer {
                 } else {
                     output.append("Keywords: ").append(keywordList).append("\n");
                 }
+
+                String description = rs.getString("abstract_text");
+                output.append("Text: ").append(description).append("\n");
 
                 String profSql = 
                     "SELECT p.first_name, p.last_name " +
@@ -1031,22 +1034,6 @@ public String getAbstractText(int abstractID) {
     return null;
 }
 
-public String getAbstractDescription(int abstractID) {
-    String sql = "SELECT abstract_text FROM abstract WHERE abstract_id = ?";
 
-    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setInt(1, abstractID);
-        ResultSet rs = stmt.executeQuery();
-
-        if (rs.next()) {
-            return rs.getString("abstract_text");
-        }
-        rs.close();
-    } catch (SQLException e) {
-        System.out.println("Error getting abstract description: " + e.getMessage());
-    }
-
-    return null;
-}
 
 }

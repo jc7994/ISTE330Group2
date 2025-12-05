@@ -104,6 +104,7 @@ public class PresentationLayer {
         List<Integer> students = dl.searchStudentsByKeywords(interests);
         for (Integer studentID : students) {
             System.out.println(dl.getStudentContactInfo(studentID));
+            System.out.println();
         }
         if (students.size() == 0) { System.out.println("No results. "); }
 
@@ -370,8 +371,7 @@ public class PresentationLayer {
                         while (updatingAbstracts) {
                             System.out.println("Please select an option: \n" +
                                     "[0] Exit \n" +
-                                    "[1] Add Abstract \n" +
-                                    "[2] View Abstract Description \n");    
+                                    "[1] Add Abstract \n");    
                             System.out.print("Selection: ");
                             int updateInput = GetInput.readInt();
                             System.out.println();
@@ -416,21 +416,6 @@ public class PresentationLayer {
                                 }
 
                                 System.out.println("Back to the Professor Menu...\n");
-                            }
-
-                            else if (updateInput == 2) {
-                                System.out.print("Enter Abstract ID: ");
-                                int absID = GetInput.readInt();
-
-                                String desc = dl.getAbstractDescription(absID);
-
-                                System.out.println("\n---------------ABSTRACT DESCRIPTION---------------");
-                                if (desc != null && !desc.trim().isEmpty()) {
-                                    System.out.println(desc);
-                                } else {
-                                    System.out.println("No description available.");
-                                }
-                                System.out.println("--------------------------------------------------\n");
                             }
 
                             else {
