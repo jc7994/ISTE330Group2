@@ -858,6 +858,25 @@ public class DataLayer {
     public List<Integer> getStudentMatchesForPublic(int publicID) {
         List<Integer> studentIDs = new ArrayList<Integer>();
         // TODO: implementation
+        try{
+            String sql = "SELECT DISTINCT account.account_id FROM student "
+            + "JOIN account ON student.account_id = account.account_id "
+            + "JOIN student_keyword ON student.account_id = student_keyword.account_id "
+            + "JOIN keyword ON student_keyword.keyword_id = keyword.keyword_id "
+            + "JOIN public_keyword ON keyword.keyword_id = public_keyword.keyword_id "
+            + "WHERE public_keyword.keyword_id "
+            + "IN(SELECT keyword_id FROM public_keyword WHERE public_keyword.account_id = ?)";
+
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1,publicID);
+            rs = pstmt.executeQuery();
+            while (rs.next()){
+                studentIDs.add(rs.getInt("account_id"));
+            }
+        }
+        catch (SQLException sqle){
+            System.out.println("Error matching students with public's keywords: " + sqle.getMessage());
+        }
 
         return studentIDs;
     }
