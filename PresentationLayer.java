@@ -78,6 +78,39 @@ public class PresentationLayer {
         System.out.println();
     }
 
+    public void interestSearchMenuProfessors() {
+        System.out.println("\"---------------SEARCH PROFESSORS BY INTERESTS--------------\"");
+        System.out.print("Please enter an interest to search from: ");
+        List<String> interests = Arrays.asList(GetInput.readLine().split(", "));
+
+        System.out.println("PROFESSORS");
+        List<Integer> professors = dl.searchProfessorByKeywords(interests);
+        for (Integer professorID : professors) {
+            System.out.println(dl.getProfessorContactInfo(professorID));
+            System.out.println();
+        }
+        if (professors.size() == 0) { System.out.println("No results. "); }
+
+        System.out.println("Back to Menu...");
+        System.out.println();
+    }
+
+    public void interestSearchMenuStudents() {
+        System.out.println("\"---------------SEARCH STUDENTS BY INTERESTS--------------\"");
+        System.out.print("Please enter an interest to search from: ");
+        List<String> interests = Arrays.asList(GetInput.readLine().split(", "));
+
+        System.out.println("STUDENTS");
+        List<Integer> students = dl.searchStudentsByKeywords(interests);
+        for (Integer studentID : students) {
+            System.out.println(dl.getStudentContactInfo(studentID));
+        }
+        if (students.size() == 0) { System.out.println("No results. "); }
+
+        System.out.println("Back to Menu...");
+        System.out.println();
+    }
+
     public void abstractSearchMenu() {
         System.out.println("---------------SEARCH ABSTRACTS--------------");
         System.out.print("Please enter an interest to search from: ");
@@ -375,7 +408,7 @@ public class PresentationLayer {
                     }
                     break;
                 case 3:
-                    interestSearchMenu();
+                    interestSearchMenuStudents();
                     break;
 
                 case 4:
@@ -492,7 +525,7 @@ public class PresentationLayer {
                     break;
 
                 case 3:
-                    abstractSearchMenu();
+                    abstractSearchMenuProfessors();
                     break;
 
                 case 4:
