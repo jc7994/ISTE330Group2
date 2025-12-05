@@ -151,7 +151,12 @@ public class PresentationLayer {
                                 "[1] Register a new account \n" +
                                 "[2] Exit the database \n");
             System.out.print("Selection: ");
-            int input = GetInput.readInt();
+            int input;
+            try {
+                input = GetInput.readInt();
+            } catch (NumberFormatException e) {
+                input = -1;
+            }
             System.out.println();
 
             switch (input) {
@@ -283,7 +288,12 @@ public class PresentationLayer {
                                 "[4] View All Student Matches \n" +
                                 "[5] View All Abstracts \n");
             System.out.print("Selection: ");
-            int input = GetInput.readInt();
+            int input;
+            try {
+                input = GetInput.readInt();
+            } catch (NumberFormatException e) {
+                input = -1;
+            }
             System.out.println("\n");
 
             switch (input) {
@@ -307,7 +317,12 @@ public class PresentationLayer {
                                 "[1] Add Interests \n" +
                                 "[2] Delete Interests \n");
                         System.out.print("Selection: ");
-                        int updateInput = GetInput.readInt();
+                        int updateInput;
+                        try {
+                            updateInput = GetInput.readInt();
+                        } catch (NumberFormatException e) {
+                            updateInput = -1;
+                        }
                         System.out.println("\n");
 
                         if (updateInput == 0) {
@@ -373,7 +388,12 @@ public class PresentationLayer {
                                     "[0] Exit \n" +
                                     "[1] Add Abstract \n");    
                             System.out.print("Selection: ");
-                            int updateInput = GetInput.readInt();
+                            int updateInput;
+                            try {
+                                updateInput = GetInput.readInt();
+                            } catch (NumberFormatException e) {
+                                updateInput = -1;
+                            }
                             System.out.println();
 
                             if (updateInput == 0) {
@@ -470,7 +490,12 @@ public class PresentationLayer {
                                 "[3] Search Abstracts \n" +
                                 "[4] View All Abstracts \n");
             System.out.print("Selection: ");
-            int input = GetInput.readInt();
+            int input;
+            try {
+                input = GetInput.readInt();
+            } catch (NumberFormatException e) {
+                input = -1;
+            }
             System.out.println();
 
             switch (input) {
@@ -494,7 +519,12 @@ public class PresentationLayer {
                             "[1] Add Interests \n" +
                             "[2] Delete Interests \n");
                     System.out.print("Selection: ");
-                    int updateInput = GetInput.readInt();
+                    int updateInput;
+                    try {
+                        updateInput = GetInput.readInt();
+                    } catch (NumberFormatException e) {
+                        updateInput = -1;
+                    }
                     System.out.println();
 
                     if (updateInput == 1) {
@@ -576,7 +606,12 @@ public class PresentationLayer {
                                 "[3] Interests \n" +
                                 "[4] View Student Matches\n");
             System.out.print("Selection: ");
-            int input = GetInput.readInt();
+            int input;
+            try {
+                input = GetInput.readInt();
+            } catch (NumberFormatException e) {
+                input = -1;
+            }
             System.out.println();
 
             switch (input) {
@@ -609,7 +644,12 @@ public class PresentationLayer {
                                 "[1] Add Interests \n" +
                                 "[2] Delete Interests\n");
                         System.out.print("Selection: ");
-                        int updateInput = GetInput.readInt();
+                        int updateInput;
+                        try {
+                            updateInput = GetInput.readInt();
+                        } catch (NumberFormatException e) {
+                            updateInput = -1;
+                        }
                         System.out.println();
 
                         if (updateInput == 0) {
