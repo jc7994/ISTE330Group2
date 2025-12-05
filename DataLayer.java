@@ -1032,14 +1032,14 @@ public String getAbstractText(int abstractID) {
 }
 
 public String getAbstractDescription(int abstractID) {
-    String sql = "SELECT description FROM abstract WHERE abstract_id = ?";
+    String sql = "SELECT abstract_text FROM abstract WHERE abstract_id = ?";
 
     try (PreparedStatement stmt = conn.prepareStatement(sql)) {
         stmt.setInt(1, abstractID);
         ResultSet rs = stmt.executeQuery();
 
         if (rs.next()) {
-            return rs.getString("description");
+            return rs.getString("abstract_text");
         }
         rs.close();
     } catch (SQLException e) {
