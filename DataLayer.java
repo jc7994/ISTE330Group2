@@ -647,6 +647,12 @@ public class DataLayer {
      * some search methods are limited to certain usertypes
     */
 
+
+
+
+
+
+
     // return list of professorIDs that match all the keywords
     public List<Integer> searchProfessorByKeywords(List<String> keywords) {
         List<Integer> professorIDs = new ArrayList<Integer>();
@@ -966,5 +972,81 @@ public class DataLayer {
 
         return result;
     }
+
+public List<Integer> getAbstractIDsByProfessor(int profAccountID) {
+    List<Integer> ids = new ArrayList<>();
+    String sql =
+        "SELECT abstract.abstract_id " +
+        "FROM professor_abstract " +
+        "JOIN abstract ON professor_abstract.abstract_id = abstract.abstract_id " +
+        "WHERE professor_abstract.account_id = ? " +
+        "ORDER BY abstract.title ASC";
+
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setInt(1, profAccountID);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            ids.add(rs.getInt("abstract_id"));
+        }
+        rs.close();
+    } catch (SQLException e) {
+        System.out.println("Error getting abstract IDs: " + e.getMessage());
+    }
+    return ids;
+}
+
+public List<String> getAbstractKeywords(int abstractID) {
+    List<String> keywords = new ArrayList<>();
+    String sql =
+        "SELECT k.keyword " +
+        "FROM abstract_keyword ak " +
+        "JOIN keyword k ON ak.keyword_id = k.keyword_id " +
+        "WHERE ak.abstract_id = ?";
+
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setInt(1, abstractID);
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            keywords.add(rs.getString("keyword"));
+        }
+        rs.close();
+    } catch (SQLException e) {
+        System.out.println("Error getting abstract keywords: " + e.getMessage());
+    }
+    return keywords;
+}
+
+public String getAbstractText(int abstractID) {
+    String sql = "SELECT abstract_text FROM abstract WHERE abstract_id = ?";
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setInt(1, abstractID);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            return rs.getString("abstract_text");
+        }
+        rs.close();
+    } catch (SQLException e) {
+        System.out.println("Error getting abstract text: " + e.getMessage());
+    }
+    return null;
+}
+
+public String getAbstractDescription(int abstractID) {
+    String sql = "SELECT description FROM abstract WHERE abstract_id = ?";
+
+    try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        stmt.setInt(1, abstractID);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            return rs.getString("description");
+        }
+        rs.close();
+    } catch (SQLException e) {
+        System.out.println("Error getting abstract description: " + e.getMessage());
+    }
+
+    return null;
+}
 
 }

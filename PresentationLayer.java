@@ -343,62 +343,102 @@ public class PresentationLayer {
                         System.out.println("Back to Professor Menu...");
                     }
                     break;
-                case 2:
-                    System.out.println("---------------YOUR ABSTRACTS--------------");
-                    List<String> abstracts = dl.getAbstract(professor.getAccountID());
-                    for (String abs : abstracts) {
-                        System.out.println(abs);
-                    }
-                    boolean updatingAbstracts = true;
-                    while (updatingAbstracts) {
-                        System.out.println("Please select an option: \n" +
-                                "[0] Exit \n" +
-                                "[1] Add Abstract \n");
-                    System.out.print("Selection: ");
-                    int updateInput = GetInput.readInt();
-                    System.out.println();
+                    case 2:
+                        System.out.println("---------------YOUR ABSTRACTS--------------");
 
-                    if (updateInput == 0) {
-                        updatingAbstracts = false;
-                    }
-                    else if (updateInput == 1) {
-                        
-                            System.out.println("Title: ");
-                            String title = GetInput.readLine();
+                        List<Integer> abstractIDs = dl.getAbstractIDsByProfessor(professor.getAccountID());
 
-                            System.out.print("Professor usernames: ");
-                            List<String> professors = Arrays.asList(GetInput.readLine().split(", "));
+                        if (abstractIDs.isEmpty()) {
+                            System.out.println("***no abstracts added***\n");
+                        } else {
+                            for (int absID : abstractIDs) {
+                                System.out.println("Abstract ID: " + absID);
+                                System.out.println("Title: " + dl.getAbstractTitleFromID(absID));
+
+                                List<String> kw = dl.getAbstractKeywords(absID);
+                                if (kw.isEmpty()) System.out.println("Keywords: None");
+                                else System.out.println("Keywords: " + String.join(", ", kw));
+
+                                String text = dl.getAbstractText(absID);
+                                System.out.println("Text: " + (text != null ? text : "No text available"));
+
+                                System.out.println("----------------------------------------\n");
+                            }
+                        }
+
+                        boolean updatingAbstracts = true;
+                        while (updatingAbstracts) {
+                            System.out.println("Please select an option: \n" +
+                                    "[0] Exit \n" +
+                                    "[1] Add Abstract \n" +
+                                    "[2] View Abstract Description \n");    
+                            System.out.print("Selection: ");
+                            int updateInput = GetInput.readInt();
                             System.out.println();
-                            // convert the list of usernames to a list of account IDs
-                            List<Integer> professorIDs = new ArrayList<>();
-                            for (String username : professors) {
-                                int accountID = dl.getAccountIDByUsername(username);
-                                professorIDs.add(accountID);
+
+                            if (updateInput == 0) {
+                                updatingAbstracts = false;
                             }
 
-                            System.out.print("Insert abstract text (up to 800 characters): ");
-                            String text = GetInput.readLine();
+                            else if (updateInput == 1) {
+                                System.out.println("Title: ");
+                                String title = GetInput.readLine();
 
-                            int added = dl.addAbstract(title, text, professorIDs);
-                            if (added != 1) {
-                                System.out.println("Added abstract.");
+                                System.out.print("Professor usernames: ");
+                                List<String> professors = Arrays.asList(GetInput.readLine().split(", "));
+                                System.out.println();
+
+                                List<Integer> professorIDs = new ArrayList<>();
+                                for (String username : professors) {
+                                    int accountID = dl.getAccountIDByUsername(username);
+                                    professorIDs.add(accountID);
+                                }
+
+                                System.out.print("Insert abstract text (up to 800 characters): ");
+                                String text = GetInput.readLine();
+
+                                int added = dl.addAbstract(title, text, professorIDs);
+                                if (added != -1) {
+                                    System.out.println("Added abstract.");
+                                } else {
+                                    System.out.println("Error adding abstract.");
+                                }
+
+                                System.out.print("Enter abstract interests: ");
+                                List<String> addInterests = Arrays.asList(GetInput.readLine().split(","));
+                                for (int i = 0; i < addInterests.size(); i++) {
+                                    addInterests.set(i, addInterests.get(i).trim());
+                                }
+                                if (dl.addKeywordsToAbstract(added, addInterests) != -1) {
+                                    System.out.println("Keywords have been added.");
+                                } else {
+                                    System.out.println("Error adding keywords.");
+                                }
+
+                                System.out.println("Back to the Professor Menu...\n");
                             }
+
+                            else if (updateInput == 2) {
+                                System.out.print("Enter Abstract ID: ");
+                                int absID = GetInput.readInt();
+
+                                String desc = dl.getAbstractDescription(absID);
+
+                                System.out.println("\n---------------ABSTRACT DESCRIPTION---------------");
+                                if (desc != null && !desc.trim().isEmpty()) {
+                                    System.out.println(desc);
+                                } else {
+                                    System.out.println("No description available.");
+                                }
+                                System.out.println("--------------------------------------------------\n");
+                            }
+
                             else {
-                                System.out.println("Error adding abstract.");
+                                System.out.println("Invalid input.\n");
                             }
+                        }
+                        break;
 
-                            System.out.print("Enter abstract interests: ");
-                            List<String> addInterests = Arrays.asList(GetInput.readLine().split(","));
-                            for (int i = 0; i < addInterests.size(); i++) {
-                                addInterests.set(i, addInterests.get(i).trim());
-                            }
-                            if (dl.addKeywordsToAbstract(added, addInterests) != -1) {
-                                System.out.println("Keywords added.");
-                            } else { System.out.println("Error adding keywords."); }
-                    }
-                    System.out.println("Back to Professor Menu...\n");
-                    }
-                    break;
                 case 3:
                     interestSearchMenuStudents();
                     break;
